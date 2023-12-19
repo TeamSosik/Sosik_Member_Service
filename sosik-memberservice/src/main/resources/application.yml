@@ -1,0 +1,38 @@
+server:
+  port: 9000
+
+spring:
+  application:
+    name: member-service
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://127.0.0.1:8761/eureka
+    instance:
+      #2??? ????? ???? ??? ???????
+      lease-expiration-duration-in-seconds: 2
+      #?????? 1??? ????? ??
+      lease-renewal-interval-in-seconds: 1
+  h2:
+    console:
+      path: /h2-console
+      enabled: true
+      settings:
+        web-allow-others: true
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb
+    username: sa
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+    defer-datasource-initialization: true
+    generate-ddl: true
