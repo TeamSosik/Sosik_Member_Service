@@ -4,18 +4,6 @@ server:
 spring:
   application:
     name: member-service
-
-eureka:
-  client:
-    register-with-eureka: true
-    fetch-registry: true
-    service-url:
-      defaultZone: http://127.0.0.1:8761/eureka
-    instance:
-      #2??? ????? ???? ??? ???????
-      lease-expiration-duration-in-seconds: 2
-      #?????? 1??? ????? ??
-      lease-renewal-interval-in-seconds: 1
   h2:
     console:
       path: /h2-console
@@ -36,3 +24,14 @@ eureka:
         use_sql_comments: true
     defer-datasource-initialization: true
     generate-ddl: true
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://127.0.0.1:8761/eureka
+
+
+
+
+
