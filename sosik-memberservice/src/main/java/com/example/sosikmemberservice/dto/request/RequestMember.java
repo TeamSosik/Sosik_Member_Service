@@ -1,11 +1,8 @@
 package com.example.sosikmemberservice.dto.request;
 
 
-import com.example.sosikmemberservice.model.vo.Email;
-import com.example.sosikmemberservice.model.vo.Name;
-import com.example.sosikmemberservice.model.vo.ProfileImageUrl;
 import lombok.Builder;
-import lombok.Getter;
+
 
 import java.math.BigDecimal;
 
