@@ -1,5 +1,6 @@
 package com.example.sosikmemberservice.service;
 
+
 import com.example.sosikmemberservice.dto.request.RequestMember;
 import com.example.sosikmemberservice.model.entity.MemberEntity;
 import com.example.sosikmemberservice.exception.ApplicationException;
@@ -8,8 +9,6 @@ import com.example.sosikmemberservice.model.vo.Email;
 import com.example.sosikmemberservice.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
