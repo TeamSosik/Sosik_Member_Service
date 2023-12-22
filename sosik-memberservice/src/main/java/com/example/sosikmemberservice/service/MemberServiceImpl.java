@@ -1,15 +1,10 @@
 package com.example.sosikmemberservice.service;
 
-import com.example.sosikmemberservice.dto.request.RequestMember;
-import com.example.sosikmemberservice.model.entity.MemberEntity;
-import com.example.sosikmemberservice.exception.ApplicationException;
-import com.example.sosikmemberservice.exception.ErrorCode;
-import com.example.sosikmemberservice.model.vo.Email;
+import com.example.sosikmemberservice.dto.RequestMember;
+import com.example.sosikmemberservice.entity.Member;
 import com.example.sosikmemberservice.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,24 +14,18 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public String createMember(RequestMember memberDTO) {
-        memberRepository.findByEmail(new Email(memberDTO.email())).ifPresent(it->{
-            throw new ApplicationException(ErrorCode.DUPLICATED_USER_NAME, "이미 존재하는 회원입니다!");
-        });
-        MemberEntity member = MemberEntity.builder()
-                .name(memberDTO.name())
-                .password(memberDTO.password())
-                .gender(memberDTO.gender())
-                .email(memberDTO.email())
-                .height(memberDTO.height())
-                .activityLevel(memberDTO.activityLevel())
-                .nickname(memberDTO.nickname())
-                .profileImage(memberDTO.profileImage())
-                .birthday(memberDTO.birthday())
-                .tdeeCalculation(memberDTO.tdeeCalculation())
+        Member member = Member.builder()
+                .name(memberDTO.getName())
+                .password(memberDTO.getPassword())
+                .gender(memberDTO.getGender())
+                .email(memberDTO.getEmail())
+                .activityLevel(memberDTO.getActivityLevel())
+                .height(memberDTO.getHeight())
+                .nickname(memberDTO.getNickname())
+                .profileImage(memberDTO.getProfileImage())
+                .birthday(memberDTO.getBirthday())
                 .build();
-
         memberRepository.save(member);
         return "ok";
-
     }
 }

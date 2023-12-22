@@ -2,10 +2,6 @@ server:
   port: 9000
 
 spring:
-  cloud:
-    config:
-      discovery:
-        enabled: false
   application:
     name: member-service
   h2:
@@ -28,15 +24,12 @@ spring:
         use_sql_comments: true
     defer-datasource-initialization: true
     generate-ddl: true
-  config:
-    import: "optional:configserver:"
 eureka:
   client:
     register-with-eureka: true
     fetch-registry: true
     service-url:
       defaultZone: http://127.0.0.1:8761/eureka
-
 
 
 
