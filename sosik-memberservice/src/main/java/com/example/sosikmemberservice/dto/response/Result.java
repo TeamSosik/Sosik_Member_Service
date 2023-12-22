@@ -18,7 +18,7 @@ public class Result<T>{
     }
 
     public static <T> Result<T> success(T result){
-        return new Result<>("데이터 전송에 성공하였습니다!",result);
+        return new Result<T>("데이터 전송에 성공하였습니다!",result);
     }
 
     public String toStream(){

@@ -1,24 +1,28 @@
-package com.example.sosikmemberservice.dto;
+package com.example.sosikmemberservice.dto.request;
 
-import lombok.AllArgsConstructor;
+
+import com.example.sosikmemberservice.model.vo.Email;
+import com.example.sosikmemberservice.model.vo.Name;
+import com.example.sosikmemberservice.model.vo.ProfileImageUrl;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
-@Getter
-@NoArgsConstructor
-@AllArgsConstructor
-public class RequestMember {
-    private Long memberId;
-    private String email;
-    private String password;
-    private String name;
-    private String gender;
-    private BigDecimal height;
-    private Integer activityLevel;
-    private String nickname;
-    private String profileImage;
-    private String birthday;
+@Builder
+public record RequestMember(String email,
+                            String password,
+                            String name,
+                            String gender,
+                            BigDecimal height,
+                            Integer activityLevel,
+                            String nickname,
+                            String profileImage,
+                            String birthday,
+                            Integer tdeeCalculation
+
+)
+{
+
+
 }
