@@ -1,6 +1,7 @@
 package com.example.sosikmemberservice.service;
 
-import com.example.sosikmemberservice.dto.RequestMember;
+
+import com.example.sosikmemberservice.dto.request.RequestMember;
 
 public interface MemberService {
 
