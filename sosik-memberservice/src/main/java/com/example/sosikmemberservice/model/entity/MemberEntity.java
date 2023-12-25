@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "member")
-public class MemberEntity extends AuditingFields{
+public class MemberEntity  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +22,7 @@ public class MemberEntity extends AuditingFields{
     @Embedded
     @Setter
     private Email email;
-    @Column(length = 50, nullable = false)
+    @Column(length = 255, nullable = false)
     private String password;
     @Embedded
     private Name name;
