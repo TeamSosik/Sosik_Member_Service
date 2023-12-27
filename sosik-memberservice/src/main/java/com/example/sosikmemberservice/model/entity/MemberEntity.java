@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Getter
 @Entity
@@ -29,6 +30,7 @@ public class MemberEntity extends AuditingFields{
     @Column(nullable = true)
     private String gender;
     @Column(precision = 4, scale = 1)
+    @Setter
     private BigDecimal height;
 
     @Column(precision = 1)
@@ -47,7 +49,8 @@ public class MemberEntity extends AuditingFields{
     @Column(precision = 5)
     private Integer tdeeCalculation;
 
-
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "weight")
+    private List<WeightEntity> weights;
 
     public MemberEntity(final Email email,
                         final Name name,
