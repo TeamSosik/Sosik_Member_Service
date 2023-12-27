@@ -5,7 +5,7 @@ spring:
   cloud:
     config:
       discovery:
-        enabled: false
+        enabled: true
   application:
     name: member-service
   h2:
@@ -30,6 +30,10 @@ spring:
     generate-ddl: true
   config:
     import: "optional:configserver:"
+  security:
+    user:
+      name: user
+      password: 1234
 eureka:
   client:
     register-with-eureka: true
@@ -37,8 +41,10 @@ eureka:
     service-url:
       defaultZone: http://127.0.0.1:8761/eureka
 
-
-
+jwt:
+  access-token-validity-in-seconds: 86400000
+  refresh-token-validity-in-seconds: 864000000
+  secret-key: rkGU45258GGhiolLO2465TFY5345kGU45258GGhiolLO2465TFY5345
 
 
 
