@@ -8,12 +8,13 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "member")
-public class MemberEntity extends AuditingFields{
+public class MemberEntity  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,13 +23,14 @@ public class MemberEntity extends AuditingFields{
     @Embedded
     @Setter
     private Email email;
-    @Column(length = 50, nullable = false)
+    @Column(length = 255, nullable = false)
     private String password;
     @Embedded
     private Name name;
     @Column(nullable = true)
     private String gender;
     @Column(precision = 4, scale = 1)
+    @Setter
     private BigDecimal height;
 
     @Column(precision = 1)
@@ -47,7 +49,8 @@ public class MemberEntity extends AuditingFields{
     @Column(precision = 5)
     private Integer tdeeCalculation;
 
-
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "weight")
+    private List<WeightEntity> weights;
 
     public MemberEntity(final Email email,
                         final Name name,
