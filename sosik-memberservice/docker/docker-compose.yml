@@ -1,0 +1,43 @@
+version: '3'
+services:
+  eureka:
+    image: sosikeureka
+    ports:
+      - "8761:8761"
+    networks:
+      - default
+    container_name: eureka-server
+  api-gateway:
+    image: sosikgateway
+    ports:
+      - "5056:5056"
+    networks:
+      - default
+    depends_on:
+      - eureka
+
+  member-service:
+    image: member-service
+    ports:
+      - "9000:9000"
+    networks:
+      - default
+
+    depends_on:
+      - eureka
+      - api-gateway
+  # Redis Service
+  redis:
+    image: redisimage
+    ports:
+      - "6379:6379"  # Redis 포트 매핑
+    volumes:
+      - redis:/app  # Redis 데이터를 저장할 볼륨 매핑
+    networks:
+      - default
+volumes:
+  redis:
+
+networks:
+  network1:
+    driver: bridge
