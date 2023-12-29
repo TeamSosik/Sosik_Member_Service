@@ -51,7 +51,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public String createMember(RequestMember memberDTO) {
+    public RequestMember createMember(RequestMember memberDTO) {
         memberRepository.findByEmail(new Email(memberDTO.email())).ifPresent(it->{
             throw new ApplicationException(ErrorCode.DUPLICATED_USER_NAME);
         });
@@ -69,7 +69,7 @@ public class MemberServiceImpl implements MemberService {
                 .build();
 
         memberRepository.save(member);
-        return "ok";
+        return memberDTO;
 
     }
     @Override
@@ -83,7 +83,8 @@ public class MemberServiceImpl implements MemberService {
         }
 
         String refreshToken = jwtTokenUtils.createRefreshToken(login.email(), Map.of());
-//        saveRefreshToken(refreshToken, entity);
+        log.info(refreshToken);
+        saveRefreshToken(refreshToken, entity);
         return jwtTokenUtils.createAccessToken(login.email(), Map.of());
     }
 
