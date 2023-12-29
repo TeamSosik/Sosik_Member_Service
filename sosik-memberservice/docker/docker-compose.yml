@@ -1,43 +1,53 @@
 version: '3'
 services:
   eureka:
-    image: sosikeureka
+    image: minutaurus/sosikeureka:tag
     ports:
       - "8761:8761"
     networks:
-      - default
+      network1:
+        ipv4_address: 172.20.0.3
     container_name: eureka-server
   api-gateway:
-    image: sosikgateway
+    image: minutaurus/sosikgateway:tag
+    networks:
+      network1:
+        ipv4_address: 172.20.0.4
     ports:
       - "5056:5056"
-    networks:
-      - default
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://172.20.0.3:8761/eureka/
     depends_on:
       - eureka
 
   member-service:
-    image: member-service
+    image: minutaurus/member-service:tag
+    networks:
+      network1:
+        ipv4_address: 172.20.0.5
     ports:
       - "9000:9000"
-    networks:
-      - default
-
     depends_on:
       - eureka
       - api-gateway
   # Redis Service
   redis:
-    image: redisimage
+    image:  minutaurus/redisimage:tag
     ports:
       - "6379:6379"  # Redis 포트 매핑
     volumes:
       - redis:/app  # Redis 데이터를 저장할 볼륨 매핑
     networks:
-      - default
+      network1:
+        ipv4_address: 172.20.0.6
 volumes:
   redis:
 
 networks:
   network1:
     driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/24
+
