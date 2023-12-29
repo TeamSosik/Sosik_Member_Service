@@ -32,14 +32,14 @@ spring:
     import: "optional:configserver:"
   data:
     redis:
-      host: 127.0.0.1
+      host: 172.20.0.6
       port: 6379
 eureka:
   client:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: http://172.20.0.3:8761/eureka
 
 jwt:
   access-token-validity-in-seconds: 86400000
