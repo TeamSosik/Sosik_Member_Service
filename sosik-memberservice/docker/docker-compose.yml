@@ -40,8 +40,23 @@ services:
     networks:
       network1:
         ipv4_address: 172.20.0.6
+
+  # Mysql food data
+  mysql-sosik-db:
+    image: gommind/sosik-test-db
+    volumes:
+      - sosik-data:/var/lib/mysql
+    ports:
+      - "10000:3306"
+    networks:
+      network1:
+        ipv4_address: 172.20.0.101
+
+
 volumes:
   redis:
+  # mysql food data
+  sosik-data:
 
 networks:
   network1:
