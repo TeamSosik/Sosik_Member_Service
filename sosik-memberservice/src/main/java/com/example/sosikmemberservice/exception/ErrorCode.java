@@ -20,6 +20,7 @@ public enum ErrorCode {
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"내부 서버의 오류입니다."),
     NAME_LENGTH_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"이름의 길이가 너무 깁니다"),
     NAME_BLANK_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"이름은 공백일 수 없습니다!"),
+    UPDATEMEMBER_EMPTY_COLUMN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"업데이트 객체에 null이 포함  됐습니다."),
     EMAIL_VALIDATION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"이메일 형식을  확인해주세요!");
 
     private HttpStatus status;
