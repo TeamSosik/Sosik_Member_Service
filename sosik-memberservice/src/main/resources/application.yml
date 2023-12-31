@@ -32,8 +32,9 @@ spring:
     import: "optional:configserver:"
   data:
     redis:
-      host: 127.0.0.1
+      host: 192.168.0.17
       port: 6379
+      password: redis
 eureka:
   client:
     register-with-eureka: true
@@ -44,7 +45,7 @@ eureka:
 jwt:
   access-token-validity-in-seconds: 86400000
   refresh-token-validity-in-seconds: 864000000
-  secret-key: rkGU45258GGhiolLO2465TFY5345kGU45258GGhiolLO2465TFY5345
+  secret-key: rkGU45258GGhiolLO2465TFY5345kGU45258GGhiolLO2465TFY5345KJHVJGCTHJGBGHCVGFrgtah2ty6ahdsryjms562n357
 
 
 
