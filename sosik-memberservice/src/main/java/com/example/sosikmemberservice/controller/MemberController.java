@@ -4,6 +4,7 @@ import com.example.sosikmemberservice.dto.request.RequestLogin;
 import com.example.sosikmemberservice.dto.request.RequestLogout;
 import com.example.sosikmemberservice.dto.request.RequestMember;
 import com.example.sosikmemberservice.dto.response.ResponseAuth;
+import com.example.sosikmemberservice.dto.request.UpdateMember;
 import com.example.sosikmemberservice.dto.response.Result;
 import com.example.sosikmemberservice.service.MemberService;
 import com.example.sosikmemberservice.service.MemberServiceImpl;
@@ -11,6 +12,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import jakarta.ws.rs.PATCH;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -33,8 +35,12 @@ public class MemberController {
     @PostMapping("/login")
     public Result<ResponseAuth> login(@RequestBody @Valid final RequestLogin request) {
         log.info(request.email()+" "+request.password());
-
         return Result.success(memberService.login(request));
+    }
+    @PatchMapping("")
+    public Result<Void> updateMember(@RequestBody @Valid UpdateMember updateMember){
+        memberService.updateMember(updateMember);
+        return Result.success();
     }
 
     @PostMapping(value = "/logout")
