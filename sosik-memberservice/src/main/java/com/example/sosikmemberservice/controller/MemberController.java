@@ -1,14 +1,21 @@
 package com.example.sosikmemberservice.controller;
 
 import com.example.sosikmemberservice.dto.request.RequestLogin;
+import com.example.sosikmemberservice.dto.request.RequestLogout;
 import com.example.sosikmemberservice.dto.request.RequestMember;
+import com.example.sosikmemberservice.dto.response.ResponseAuth;
 import com.example.sosikmemberservice.dto.request.UpdateMember;
 import com.example.sosikmemberservice.dto.response.Result;
 import com.example.sosikmemberservice.service.MemberService;
+import com.example.sosikmemberservice.service.MemberServiceImpl;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.PATCH;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,28 +24,35 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/members")
 public class MemberController {
 
-    private final MemberService memberService;
+    private final MemberServiceImpl memberService;
 
     @PostMapping("/sign-up")
-    public Result<Void> createMember(@RequestBody @Valid RequestMember member) {
-        log.info(member.password()+"  "+member.email());
-        log.info("=========================================================");
+    public Result<Void> createMember(@RequestBody @Valid final RequestMember member) {
         memberService.createMember(member);
-        log.info("=========================================================");
         return Result.success();
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody @Valid RequestLogin request){
-        log.info("================= 로긴 컨트롤러 단");
+    public Result<ResponseAuth> login(@RequestBody @Valid final RequestLogin request) {
         log.info(request.email()+" "+request.password());
-       return memberService.login(request);
+        return Result.success(memberService.login(request));
     }
     @PatchMapping("")
     public Result<Void> updateMember(@RequestBody @Valid UpdateMember updateMember){
         memberService.updateMember(updateMember);
         return Result.success();
     }
+
+    @PostMapping(value = "/logout")
+    public Result<Void> logout(@RequestBody final RequestLogout request) throws ServletException {
+        log.info(memberService.logout(request));
+        return Result.success();
+    }
+
+//    @GetMapping(value = "/Test")
+//    public Result<Void> headerCheck(HttpServletRequest servletRequest) {
+//        return Result.success();
+//    }
 
 
 }
