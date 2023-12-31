@@ -1,5 +1,6 @@
 package com.example.sosikmemberservice.model.entity;
 
+import com.example.sosikmemberservice.dto.request.UpdateMember;
 import com.example.sosikmemberservice.model.vo.Email;
 import com.example.sosikmemberservice.model.vo.Name;
 import com.example.sosikmemberservice.model.vo.ProfileImageUrl;
@@ -44,4 +45,9 @@ public class WeightEntity {
             this.goalWeight = goalWeight;
     }
 
+
+    public void updateWeight(UpdateMember updateMember){
+        this.goalWeight=updateMember.goalWeight();
+        this.currentWeight=updateMember.currentWeight();
+    }
 }

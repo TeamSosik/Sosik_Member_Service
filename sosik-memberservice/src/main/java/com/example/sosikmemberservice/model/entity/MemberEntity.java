@@ -1,6 +1,7 @@
 package com.example.sosikmemberservice.model.entity;
 
 
+import com.example.sosikmemberservice.dto.request.UpdateMember;
 import com.example.sosikmemberservice.model.vo.Email;
 import com.example.sosikmemberservice.model.vo.Name;
 import com.example.sosikmemberservice.model.vo.ProfileImageUrl;
@@ -75,7 +76,12 @@ public class MemberEntity  {
         this.tdeeCalculation =tdeeCalculation;
 
     }
-
+    public void updateMember(UpdateMember updateMember){
+        this.height=updateMember.height();
+        this.activityLevel=updateMember.activityLevel();
+        this.nickname=updateMember.nickname();
+        this.profileImage= new ProfileImageUrl(updateMember.profileImage());
+    }
     @Builder
     public MemberEntity(
             final String email,
