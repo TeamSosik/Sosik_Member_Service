@@ -3,12 +3,14 @@ package com.example.sosikmemberservice.service;
 
 import com.example.sosikmemberservice.dto.request.RequestLogin;
 import com.example.sosikmemberservice.dto.request.RequestMember;
+import com.example.sosikmemberservice.dto.request.UpdateMember;
 import com.example.sosikmemberservice.model.entity.MemberEntity;
 import com.example.sosikmemberservice.exception.ApplicationException;
 import com.example.sosikmemberservice.exception.ErrorCode;
+import com.example.sosikmemberservice.model.entity.WeightEntity;
 import com.example.sosikmemberservice.model.vo.Email;
 import com.example.sosikmemberservice.repository.MemberRepository;
-import com.example.sosikmemberservice.repository.RefreshTokenRepository;
+import com.example.sosikmemberservice.repository.WeightRepository;
 import com.example.sosikmemberservice.util.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +19,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -28,6 +31,7 @@ import java.util.Optional;
 public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
+    private final WeightRepository weightRepository;
     private final BCryptPasswordEncoder encoder;
     private final JwtTokenUtils jwtTokenUtils;
     private final RefreshTokenRepository refreshTokenRepository;
@@ -72,6 +76,23 @@ public class MemberServiceImpl implements MemberService {
         return "ok";
 
     }
+
+    @Override
+    @Transactional
+    public String updateMember(UpdateMember updateMember) {
+        if(updateMember.memberId() == null || updateMember.currentWeight() == null || updateMember.goalWeight() == null
+                || updateMember.weightId() == null || updateMember.activityLevel() == null
+                || updateMember.height() == null || updateMember.nickname() == null || updateMember.profileImage() == null )
+        {
+            throw new IllegalArgumentException(String.valueOf(ErrorCode.UPDATEMEMBER_EMPTY_COLUMN_ERROR));
+        };
+        MemberEntity member = memberRepository.findById(updateMember.memberId()).get();
+        WeightEntity weight = weightRepository.findById(updateMember.weightId()).get();
+        member.updateMember(updateMember);
+        weight.updateWeight(updateMember);
+        return "ok";
+    }
+
     @Override
     public String login(RequestLogin login) {
         log.info("================= 로긴 서비스 단");
@@ -83,7 +104,7 @@ public class MemberServiceImpl implements MemberService {
         }
 
         String refreshToken = jwtTokenUtils.createRefreshToken(login.email(), Map.of());
-//        saveRefreshToken(refreshToken, entity);
+        saveRefreshToken(refreshToken, entity);
         return jwtTokenUtils.createAccessToken(login.email(), Map.of());
     }
 
@@ -91,6 +112,7 @@ public class MemberServiceImpl implements MemberService {
     private void saveRefreshToken(String refreshToken, MemberEntity member) {
         refreshTokenRepository.save(refreshToken, member.getEmail().getValue());
     }
+
 
 
 
