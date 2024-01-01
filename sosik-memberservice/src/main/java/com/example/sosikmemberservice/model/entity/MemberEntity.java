@@ -2,6 +2,7 @@ package com.example.sosikmemberservice.model.entity;
 
 
 import com.example.sosikmemberservice.model.MemberRole;
+import com.example.sosikmemberservice.dto.request.UpdateMember;
 import com.example.sosikmemberservice.model.vo.Email;
 import com.example.sosikmemberservice.model.vo.Name;
 import com.example.sosikmemberservice.model.vo.ProfileImageUrl;

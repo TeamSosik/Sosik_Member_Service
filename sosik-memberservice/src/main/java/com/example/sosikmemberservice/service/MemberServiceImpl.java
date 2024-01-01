@@ -13,6 +13,7 @@ import com.example.sosikmemberservice.exception.ErrorCode;
 import com.example.sosikmemberservice.model.vo.Email;
 import com.example.sosikmemberservice.repository.MemberRepository;
 import com.example.sosikmemberservice.repository.RefreshTokenRepository;
+import com.example.sosikmemberservice.repository.WeightRepository;
 import com.example.sosikmemberservice.util.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -64,7 +65,25 @@ public class MemberServiceImpl {
 
     }
 
-    public ResponseAuth login(RequestLogin login) {
+
+    @Transactional
+    public String updateMember(UpdateMember updateMember) {
+        if(updateMember.memberId() == null || updateMember.currentWeight() == null || updateMember.goalWeight() == null
+                || updateMember.weightId() == null || updateMember.activityLevel() == null
+                || updateMember.height() == null || updateMember.nickname() == null || updateMember.profileImage() == null )
+        {
+            throw new IllegalArgumentException(String.valueOf(ErrorCode.UPDATEMEMBER_EMPTY_COLUMN_ERROR));
+        };
+        MemberEntity member = memberRepository.findById(updateMember.memberId()).get();
+        WeightEntity weight = weightRepository.findById(updateMember.weightId()).get();
+        member.updateMember(updateMember);
+        weight.updateWeight(updateMember);
+        return "ok";
+    }
+
+      public ResponseAuth login(RequestLogin login) {
+        log.info("================= 로긴 서비스 단");
+        log.info(login.email());
         MemberEntity entity = memberRepository.findByEmail(new Email(login.email()))
                 .orElseThrow(IllegalArgumentException::new);
         if (!encoder.matches(login.password(), entity.getPassword())) {
