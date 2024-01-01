@@ -1,6 +1,5 @@
 package com.example.sosikmemberservice.config.filter;
 
-import com.example.sosikmemberservice.service.MemberService;
 import com.example.sosikmemberservice.service.MemberServiceImpl;
 import com.example.sosikmemberservice.util.JwtTokenUtils;
 import jakarta.servlet.*;

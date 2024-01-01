@@ -13,6 +13,7 @@ import com.example.sosikmemberservice.exception.ErrorCode;
 import com.example.sosikmemberservice.model.entity.WeightEntity;
 import com.example.sosikmemberservice.model.vo.Email;
 import com.example.sosikmemberservice.repository.MemberRepository;
+import com.example.sosikmemberservice.repository.RefreshTokenRepository;
 import com.example.sosikmemberservice.repository.WeightRepository;
 import com.example.sosikmemberservice.util.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
@@ -65,7 +66,6 @@ public class MemberServiceImpl {
 
     }
 
-    @Override
     @Transactional
     public String updateMember(UpdateMember updateMember) {
         if(updateMember.memberId() == null || updateMember.currentWeight() == null || updateMember.goalWeight() == null
@@ -81,7 +81,6 @@ public class MemberServiceImpl {
         return "ok";
     }
 
-    @Override
       public ResponseAuth login(RequestLogin login) {
         log.info("================= 로긴 서비스 단");
         log.info(login.email());
