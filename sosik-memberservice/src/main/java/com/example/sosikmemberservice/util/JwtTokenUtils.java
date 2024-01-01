@@ -1,19 +1,18 @@
 package com.example.sosikmemberservice.util;
 
+import com.example.sosikmemberservice.dto.response.ResponseAuth;
 import com.example.sosikmemberservice.exception.ApplicationException;
 import com.example.sosikmemberservice.exception.ErrorCode;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.security.Key;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,50 +23,50 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class JwtTokenUtils {
-        private static final String TYPE_CLAIM_KEY = "type";
-        private static final String USERNAME = "userName";
-        private static final String AUTHORITIES_KEY = "auth";
+        private final Key key;
         private final String secretKey;
         private final Long accessTokenValidityInSeconds;
         private final Long refreshTokenValidityInSeconds;
 
         public JwtTokenUtils(@Value("${jwt.secret-key}") final String secretKey,
-                                @Value("#{T(Long).parseLong('${jwt.access-token-validity-in-seconds}')}") final Long accessTokenValidityInSeconds,
-                                @Value("#{T(Long).parseLong('${jwt.refresh-token-validity-in-seconds}')}") final Long refreshTokenValidityInSeconds) {
+                             @Value("#{T(Long).parseLong('${jwt.access-token-validity-in-seconds}')}") final Long accessTokenValidityInSeconds,
+                             @Value("#{T(Long).parseLong('${jwt.refresh-token-validity-in-seconds}')}") final Long refreshTokenValidityInSeconds) {
+            byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+            this.key = Keys.hmacShaKeyFor(keyBytes);
             this.secretKey = secretKey;
             this.accessTokenValidityInSeconds = accessTokenValidityInSeconds;
             this.refreshTokenValidityInSeconds = refreshTokenValidityInSeconds;
         }
 
-        public String createAccessToken(final String subject, final Map<String, Object> claims) {
-            final Map<String, Object> copiedClaims = new HashMap<>(claims);
-            copiedClaims.put(TYPE_CLAIM_KEY, "Access");
-            copiedClaims.put(USERNAME, subject);
-            return createToken(accessTokenValidityInSeconds, subject, copiedClaims);
-        }
+    // 유저 정보를 가지고 AccessToken, RefreshToken 을 생성하는 메서드
+        public ResponseAuth generateToken(Authentication authentication) {
+            // 권한 가져오기
+            String authorities = authentication.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.joining(","));
 
-        public String createRefreshToken(final String subject, final Map<String, Object> claims) {
-            final Map<String, Object> copiedClaims = new HashMap<>(claims);
-            copiedClaims.put(TYPE_CLAIM_KEY, "Refresh");
-            copiedClaims.put(USERNAME, subject);
-            return createToken(refreshTokenValidityInSeconds, subject, copiedClaims);
-        }
-
-//        private String generateUUID() {
-//            return UUID.randomUUID().toString();
-//        }
-
-        private String createToken(final Long tokenValidityInSeconds, final String subject,
-                                   final Map<String, Object> claims) {
-            final SecretKey signingKey = createKey();
-            final Date expiration = createExpiration(tokenValidityInSeconds);
-            return Jwts.builder()
-                    .signWith(signingKey)
-                    .setClaims(claims)
-                    .setSubject(subject)
-                    .setExpiration(expiration)
+            long now = (new Date()).getTime();
+            // Access Token 생성
+            Date accessTokenExpiresIn = new Date(now + accessTokenValidityInSeconds);
+            String accessToken = Jwts.builder()
+                    .setSubject(authentication.getName())
+                    .claim("auth", authorities)
+                    .setExpiration(accessTokenExpiresIn)
+                    .signWith(createKey())
                     .compact();
+
+            // Refresh Token 생성
+            String refreshToken = Jwts.builder()
+                    .setExpiration(new Date(now + refreshTokenValidityInSeconds))
+                    .signWith(createKey())
+                    .compact();
+
+            return ResponseAuth.builder()
+                    .accessToken(accessToken)
+                    .refreshToken(refreshToken)
+                    .build();
         }
 
         private SecretKey createKey() {
@@ -75,46 +74,64 @@ public class JwtTokenUtils {
             return Keys.hmacShaKeyFor(secretKeyBytes);
         }
 
-        private Date createExpiration(final Long validity) {
-            final long now = new Date().getTime();
-            return new Date(now + validity);
-        }
 
 
-        private Jws<Claims> parseToClaimsJws(final String token) {
+        private Claims parseClaimsJws(final String token) {
+            String token1 = token;
             final SecretKey signingKey = createKey();
             return Jwts.parserBuilder()
                     .setSigningKey(signingKey)
                     .build()
-                    .parseClaimsJws(token);
+                    .parseClaimsJws(token)
+
+                    .getBody();
         }
-    private Claims extractClaims(String token){
-        final SecretKey signingKey = createKey();
-        return Jwts.parserBuilder().setSigningKey(signingKey)
-                .build()
-                .parseClaimsJws(token).getBody();
-    }
-    public String getUserName(String token){
-        return extractClaims(token).get("userName",String.class);
-    }
+        private Claims extractClaims(String token){
+            final SecretKey signingKey = createKey();
+            return Jwts.parserBuilder().setSigningKey(signingKey)
+                    .build()
+                    .parseClaimsJws(token).getBody();
+        }
+        public Authentication getAuthentication(String accessToken) {
+            // 토큰 복호화
+            Claims claims = parseClaimsJws(accessToken);
 
-    public boolean isExpired(String token){
-        Date expiredDate = extractClaims(token).getExpiration();
-        return expiredDate.before(new Date());
-    }
+            if (claims.get("auth") == null) {
+                throw new RuntimeException("권한 정보가 없는 토큰입니다.");
+            }
 
-    public LocalDateTime findTokenExpiredAt(final String token) {
-        final Jws<Claims> claimsJws = parseToClaimsJws(token);
-        final Date expiration = claimsJws.getBody()
-                .getExpiration();
-        return expiration.toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDateTime();
-    }
+            // 클레임에서 권한 정보 가져오기
+            Collection<? extends GrantedAuthority> authorities =
+                    Arrays.stream(claims.get("auth").toString().split(","))
+                            .map(SimpleGrantedAuthority::new)
+                            .collect(Collectors.toList());
 
-    public String findSubject(final String token) {
-        final Jws<Claims> claimsJws = parseToClaimsJws(token);
-        return claimsJws.getBody()
-                .getSubject();
-    }
+            // UserDetails 객체를 만들어서 Authentication 리턴
+            UserDetails principal = new User(claims.getSubject(), "", authorities);
+            return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+        }
+
+        public boolean validateToken(String token) {
+            try {
+                parseClaimsJws(token);
+            } catch (MalformedJwtException e) {
+                log.info("Invalid JWT token");
+                log.trace("Invalid JWT token trace = {}", e);
+                throw new ApplicationException(ErrorCode.MALFORMED_TOKEN_ERROR);
+            } catch (ExpiredJwtException e) {
+                log.info("Expired JWT token");
+                log.trace("Expired JWT token trace = {}", e);
+                throw new ApplicationException(ErrorCode.EXPIRED_TOKEN_ERROR);
+            } catch (UnsupportedJwtException e) {
+                log.info("Unsupported JWT token");
+                log.trace("Unsupported JWT token trace = {}", e);
+                throw new ApplicationException(ErrorCode.UNSUPPORTED_TOKEN_ERROR);
+            }
+            return true;
+        }
+
+        public String findSubject(final String token) {
+            Claims claims = parseClaimsJws(token);
+            return claims.getSubject();
+        }
 }

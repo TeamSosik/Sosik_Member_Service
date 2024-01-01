@@ -35,10 +35,9 @@ public class RefreshTokenRepositoryImpl implements RefreshTokenRepository{
 
         redisTemplate.opsForValue()
                 .set(memberIdentifier,token,timeToLiveSeconds);
-
-        log.info("저장을 완료했어요~");
     }
 
+    // TO-DO : 토큰 값이 이상하게 나온다.
     @Override
     public Optional<String> findTokenByMemberIdentifier(String memberIdentifier) {
         final String email = redisTemplate.opsForValue().get(memberIdentifier);
