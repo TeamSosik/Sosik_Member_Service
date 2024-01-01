@@ -1,5 +1,7 @@
 package com.example.sosikmemberservice.config.filter;
 
+import com.example.sosikmemberservice.model.Member;
+import com.example.sosikmemberservice.model.entity.MemberEntity;
 import com.example.sosikmemberservice.service.MemberService;
 import com.example.sosikmemberservice.service.MemberServiceImpl;
 import com.example.sosikmemberservice.util.JwtTokenUtils;
@@ -19,6 +21,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -38,26 +41,30 @@ public class JwtFilter extends OncePerRequestFilter {
         try {
             final String token = header.split(" ")[1].trim();
 
-            if (utils.isExpired(token)) {
-                log.error("Key is expired");
+            if (!utils.validateToken(token)) {
                 chain.doFilter(request, response);
                 return;
             }
 
-            String userName = utils.getUserName(token);
-            UserDetails userDetails = memberService.loadUserByUserName(userName);
 
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                    userDetails, null, userDetails.getAuthorities());
-            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
+            Authentication authentication = utils.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            log.info("Security Context에 '{}' 인증 정보를 저장했습니다, uri: ", authentication.getName());
+            log.info("Security Context에 '{}' 인증 정보를 저장했습니다, uri: ", authentication);
+
         } catch (RuntimeException e) {
             log.error("Error occurs while validating {}", e.toString());
             chain.doFilter(request, response);
             return;
         }
         chain.doFilter(request, response);
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String[] excludePath = {"/members/sign-up", "/members/login", "/members/reissue"};
+        String path = request.getRequestURI();
+        return Arrays.stream(excludePath).anyMatch(path::startsWith);
     }
 }
 

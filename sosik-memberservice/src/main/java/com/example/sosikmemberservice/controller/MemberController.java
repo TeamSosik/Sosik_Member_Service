@@ -5,6 +5,8 @@ import com.example.sosikmemberservice.dto.request.RequestLogout;
 import com.example.sosikmemberservice.dto.request.RequestMember;
 import com.example.sosikmemberservice.dto.response.ResponseAuth;
 import com.example.sosikmemberservice.dto.response.Result;
+import com.example.sosikmemberservice.model.Member;
+import com.example.sosikmemberservice.model.entity.MemberEntity;
 import com.example.sosikmemberservice.service.MemberService;
 import com.example.sosikmemberservice.service.MemberServiceImpl;
 import jakarta.servlet.ServletException;
@@ -14,6 +16,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -38,15 +41,11 @@ public class MemberController {
     }
 
     @PostMapping(value = "/logout")
-    public Result<Void> logout(@RequestBody final RequestLogout request) throws ServletException {
+    public Result<Void> logout(@RequestBody final RequestLogout request) {
         log.info(memberService.logout(request));
         return Result.success();
     }
 
-//    @GetMapping(value = "/Test")
-//    public Result<Void> headerCheck(HttpServletRequest servletRequest) {
-//        return Result.success();
-//    }
 
 
 }
