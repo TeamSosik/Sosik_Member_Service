@@ -1,15 +1,18 @@
 package com.example.sosikmemberservice.model.entity;
 
 
+import com.example.sosikmemberservice.dto.request.RequestUpdate;
 import com.example.sosikmemberservice.model.MemberRole;
-import com.example.sosikmemberservice.dto.request.UpdateMember;
 import com.example.sosikmemberservice.model.vo.Email;
 import com.example.sosikmemberservice.model.vo.Name;
 import com.example.sosikmemberservice.model.vo.ProfileImageUrl;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -50,6 +53,10 @@ public class MemberEntity  {
     @Column(precision = 5)
     private Integer tdeeCalculation;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<WeightEntity> weight = new ArrayList<>();
+
 
 
     public MemberEntity(final Email email,
@@ -74,6 +81,13 @@ public class MemberEntity  {
         this.birthday = birthday;
         this.tdeeCalculation =tdeeCalculation;
 
+    }
+
+    public void updateMember(RequestUpdate updateMember){
+        this.height=updateMember.height();
+        this.activityLevel=updateMember.activityLevel();
+        this.nickname=updateMember.nickname();
+        this.profileImage= new ProfileImageUrl(updateMember.profileImage());
     }
 
     @Builder

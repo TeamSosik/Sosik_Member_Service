@@ -47,18 +47,12 @@ public class Member implements UserDetails {
     public boolean isEnabled() {
         return false;
     }
+
     private  Long memberId;
     private String email;
     private String password;
     private MemberRole memberRole;
     private String birthday;
-
-    private String email;
-    private String password;
-
-    private MemberRole memberRole;
-    private String birthday;
-
     private String profileImage;
     private String nickname;
 
