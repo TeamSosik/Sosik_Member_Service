@@ -11,18 +11,23 @@ import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 @Component
 public class JwtTokenUtils {
         private static final String TYPE_CLAIM_KEY = "type";
-        private static final String UUID_CLAIM_KEY = "UUID";
+        private static final String USERNAME = "userName";
+        private static final String AUTHORITIES_KEY = "auth";
         private final String secretKey;
         private final Long accessTokenValidityInSeconds;
         private final Long refreshTokenValidityInSeconds;
@@ -38,20 +43,20 @@ public class JwtTokenUtils {
         public String createAccessToken(final String subject, final Map<String, Object> claims) {
             final Map<String, Object> copiedClaims = new HashMap<>(claims);
             copiedClaims.put(TYPE_CLAIM_KEY, "Access");
-            copiedClaims.put(UUID_CLAIM_KEY, generateUUID());
+            copiedClaims.put(USERNAME, subject);
             return createToken(accessTokenValidityInSeconds, subject, copiedClaims);
         }
 
         public String createRefreshToken(final String subject, final Map<String, Object> claims) {
             final Map<String, Object> copiedClaims = new HashMap<>(claims);
             copiedClaims.put(TYPE_CLAIM_KEY, "Refresh");
-            copiedClaims.put(UUID_CLAIM_KEY, generateUUID());
+            copiedClaims.put(USERNAME, subject);
             return createToken(refreshTokenValidityInSeconds, subject, copiedClaims);
         }
 
-        private String generateUUID() {
-            return UUID.randomUUID().toString();
-        }
+//        private String generateUUID() {
+//            return UUID.randomUUID().toString();
+//        }
 
         private String createToken(final Long tokenValidityInSeconds, final String subject,
                                    final Map<String, Object> claims) {
@@ -75,16 +80,6 @@ public class JwtTokenUtils {
             return new Date(now + validity);
         }
 
-        public boolean isValidToken(final String token) {
-            try {
-                parseToClaimsJws(token);
-            } catch (final ExpiredJwtException expiredJwtException) {
-                throw new ApplicationException(ErrorCode.EXPIRED_TOKEN_ERROR);
-            } catch (final JwtException jwtException) {
-                throw new ApplicationException(ErrorCode.INVALID_TOKEN_ERROR);
-            }
-            return true;
-        }
 
         private Jws<Claims> parseToClaimsJws(final String token) {
             final SecretKey signingKey = createKey();
@@ -93,19 +88,33 @@ public class JwtTokenUtils {
                     .build()
                     .parseClaimsJws(token);
         }
+    private Claims extractClaims(String token){
+        final SecretKey signingKey = createKey();
+        return Jwts.parserBuilder().setSigningKey(signingKey)
+                .build()
+                .parseClaimsJws(token).getBody();
+    }
+    public String getUserName(String token){
+        return extractClaims(token).get("userName",String.class);
+    }
 
-        public LocalDateTime findTokenExpiredAt(final String token) {
-            final Jws<Claims> claimsJws = parseToClaimsJws(token);
-            final Date expiration = claimsJws.getBody()
-                    .getExpiration();
-            return expiration.toInstant()
-                    .atZone(ZoneId.systemDefault())
-                    .toLocalDateTime();
-        }
+    public boolean isExpired(String token){
+        Date expiredDate = extractClaims(token).getExpiration();
+        return expiredDate.before(new Date());
+    }
 
-        public String findSubject(final String token) {
-            final Jws<Claims> claimsJws = parseToClaimsJws(token);
-            return claimsJws.getBody()
-                    .getSubject();
-        }
+    public LocalDateTime findTokenExpiredAt(final String token) {
+        final Jws<Claims> claimsJws = parseToClaimsJws(token);
+        final Date expiration = claimsJws.getBody()
+                .getExpiration();
+        return expiration.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+    }
+
+    public String findSubject(final String token) {
+        final Jws<Claims> claimsJws = parseToClaimsJws(token);
+        return claimsJws.getBody()
+                .getSubject();
+    }
 }

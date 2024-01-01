@@ -2,6 +2,7 @@ package com.example.sosikmemberservice.model.entity;
 
 
 import com.example.sosikmemberservice.model.MemberRole;
+import com.example.sosikmemberservice.dto.request.UpdateMember;
 import com.example.sosikmemberservice.model.vo.Email;
 import com.example.sosikmemberservice.model.vo.Name;
 import com.example.sosikmemberservice.model.vo.ProfileImageUrl;
@@ -9,6 +10,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Getter
 @Entity
@@ -29,6 +31,7 @@ public class MemberEntity  {
     @Column(nullable = true)
     private String gender;
     @Column(precision = 4, scale = 1)
+    @Setter
     private BigDecimal height;
 
     @Column(name="role")
@@ -49,7 +52,8 @@ public class MemberEntity  {
     @Column(precision = 5)
     private Integer tdeeCalculation;
 
-
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "weight")
+    private List<WeightEntity> weights;
 
     public MemberEntity(final Email email,
                         final Name name,
@@ -74,7 +78,12 @@ public class MemberEntity  {
         this.tdeeCalculation =tdeeCalculation;
 
     }
-
+    public void updateMember(UpdateMember updateMember){
+        this.height=updateMember.height();
+        this.activityLevel=updateMember.activityLevel();
+        this.nickname=updateMember.nickname();
+        this.profileImage= new ProfileImageUrl(updateMember.profileImage());
+    }
     @Builder
     public MemberEntity(
             final String email,
