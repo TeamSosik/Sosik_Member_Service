@@ -6,7 +6,6 @@ import com.example.sosikmemberservice.dto.request.RequestMember;
 import com.example.sosikmemberservice.dto.response.ResponseAuth;
 import com.example.sosikmemberservice.dto.request.UpdateMember;
 import com.example.sosikmemberservice.dto.response.Result;
-import com.example.sosikmemberservice.service.MemberService;
 import com.example.sosikmemberservice.service.MemberServiceImpl;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

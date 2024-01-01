@@ -2,7 +2,6 @@ package com.example.sosikmemberservice.security;
 
 import com.example.sosikmemberservice.config.filter.JwtFilter;
 import com.example.sosikmemberservice.exception.CustomAuthenticationentryPoint;
-import com.example.sosikmemberservice.service.MemberService;
 import com.example.sosikmemberservice.service.MemberServiceImpl;
 import com.example.sosikmemberservice.util.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
