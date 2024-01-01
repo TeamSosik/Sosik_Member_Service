@@ -23,6 +23,7 @@ public class MemberEntity  {
 
     @Embedded
     private Email email;
+    @Setter
     @Column(length = 255, nullable = false)
     private String password;
     @Embedded

@@ -2,6 +2,12 @@ server:
   port: 9000
 
 spring:
+  mail:
+    host: smtp.naver.com
+    port: 465
+    username: ${MAIL_ID}
+    password: ${MAIL_PASSWORD}
+    protocol: smtps
   cloud:
     config:
       discovery:
