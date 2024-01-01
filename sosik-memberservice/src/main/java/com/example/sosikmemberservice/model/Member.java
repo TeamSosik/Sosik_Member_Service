@@ -3,13 +3,14 @@ package com.example.sosikmemberservice.model;
 import com.example.sosikmemberservice.model.entity.MemberEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import java.util.Collection;
 import java.util.List;
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 public class Member implements UserDetails {
     @Override
@@ -19,12 +20,12 @@ public class Member implements UserDetails {
 
     @Override
     public String getPassword() {
-        return null;
+        return this.password;
     }
 
     @Override
     public String getUsername() {
-        return null;
+        return this.email;
     }
 
     @Override
@@ -47,6 +48,10 @@ public class Member implements UserDetails {
         return false;
     }
     private  Long memberId;
+    private String email;
+    private String password;
+    private MemberRole memberRole;
+    private String birthday;
 
     private String email;
     private String password;

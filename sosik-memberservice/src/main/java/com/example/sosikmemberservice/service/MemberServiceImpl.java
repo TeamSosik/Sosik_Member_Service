@@ -6,11 +6,10 @@ import com.example.sosikmemberservice.dto.request.RequestLogout;
 import com.example.sosikmemberservice.dto.request.RequestMember;
 import com.example.sosikmemberservice.dto.response.ResponseAuth;
 import com.example.sosikmemberservice.model.Member;
-import com.example.sosikmemberservice.dto.request.UpdateMember;
+import com.example.sosikmemberservice.model.MemberRole;
 import com.example.sosikmemberservice.model.entity.MemberEntity;
 import com.example.sosikmemberservice.exception.ApplicationException;
 import com.example.sosikmemberservice.exception.ErrorCode;
-import com.example.sosikmemberservice.model.entity.WeightEntity;
 import com.example.sosikmemberservice.model.vo.Email;
 import com.example.sosikmemberservice.repository.MemberRepository;
 import com.example.sosikmemberservice.repository.RefreshTokenRepository;
@@ -18,14 +17,14 @@ import com.example.sosikmemberservice.repository.WeightRepository;
 import com.example.sosikmemberservice.util.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Map;
 import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -33,15 +32,15 @@ import java.util.Optional;
 public class MemberServiceImpl {
 
     private final MemberRepository memberRepository;
-    private final WeightRepository weightRepository;
     private final BCryptPasswordEncoder encoder;
     private final JwtTokenUtils jwtTokenUtils;
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final RefreshTokenRepository refreshTokenRepository;
 
-    public Member loadUserByUserName(String email) {
-        return memberRepository.findByEmail(new Email(email))
-                .map(Member::fromEntity).orElseThrow(()->
-                new ApplicationException(ErrorCode.USER_NOT_FOUND,String.format("%s 유저를 찾지 못했습니다!",email)));
+    public MemberEntity findMember(String email){
+         return memberRepository.findByEmail(new Email(email))
+                .orElseThrow(IllegalArgumentException::new);
+
     }
 
     public RequestMember createMember(RequestMember memberDTO) {
@@ -66,6 +65,7 @@ public class MemberServiceImpl {
 
     }
 
+
     @Transactional
     public String updateMember(UpdateMember updateMember) {
         if(updateMember.memberId() == null || updateMember.currentWeight() == null || updateMember.goalWeight() == null
@@ -89,11 +89,14 @@ public class MemberServiceImpl {
         if (!encoder.matches(login.password(), entity.getPassword())) {
             throw new ApplicationException(ErrorCode.INVALID_PASSWORD);
         }
+        UsernamePasswordAuthenticationToken authenticationToken
+                = new UsernamePasswordAuthenticationToken(login.email(), login.password());
+        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
-        String refreshToken = jwtTokenUtils.createRefreshToken(login.email(), Map.of());
-        String accessToken = jwtTokenUtils.createAccessToken(login.email(), Map.of());
-        saveToken(refreshToken ,entity);
-        return new ResponseAuth(refreshToken,accessToken);
+        ResponseAuth responseAuth = jwtTokenUtils.generateToken(authentication);
+        saveToken(responseAuth.refreshToken() ,entity);
+
+        return responseAuth;
 
     }
 
@@ -103,9 +106,7 @@ public class MemberServiceImpl {
         return "로그아웃 완료";
     }
     private void saveToken(String refreshToken,MemberEntity member) {
-        log.info("레디스 저장을 시작합니다!");
         refreshTokenRepository.save(refreshToken,member.getEmail().getValue() );
     }
-
 
 }
