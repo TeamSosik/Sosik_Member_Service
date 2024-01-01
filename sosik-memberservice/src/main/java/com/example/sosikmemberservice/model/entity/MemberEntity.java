@@ -1,6 +1,7 @@
 package com.example.sosikmemberservice.model.entity;
 
 
+import com.example.sosikmemberservice.model.MemberRole;
 import com.example.sosikmemberservice.dto.request.UpdateMember;
 import com.example.sosikmemberservice.model.vo.Email;
 import com.example.sosikmemberservice.model.vo.Name;
@@ -22,7 +23,6 @@ public class MemberEntity  {
     private Long memberId;
 
     @Embedded
-    @Setter
     private Email email;
     @Column(length = 255, nullable = false)
     private String password;
@@ -34,11 +34,13 @@ public class MemberEntity  {
     @Setter
     private BigDecimal height;
 
+    @Column(name="role")
+    @Enumerated(EnumType.STRING)
+    private MemberRole role = MemberRole.USER;
+
     @Column(precision = 1)
-    @Setter
     private Integer activityLevel;
     @Column(length = 20, nullable = false)
-    @Setter
     private String nickname;
 
     @Embedded
