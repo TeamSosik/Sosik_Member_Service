@@ -1,5 +1,10 @@
 package com.example.sosikmemberservice.controller;
 
+import com.example.sosikmemberservice.dto.request.*;
+import com.example.sosikmemberservice.dto.response.ResponseAuth;
+import com.example.sosikmemberservice.dto.response.Result;
+import com.example.sosikmemberservice.model.Mail;
+import com.example.sosikmemberservice.service.MailService;
 import com.example.sosikmemberservice.dto.request.RequestLogin;
 import com.example.sosikmemberservice.dto.request.RequestLogout;
 import com.example.sosikmemberservice.dto.request.RequestMember;
@@ -19,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberServiceImpl memberService;
+    private final MailService mailService;
 
     @PostMapping("/sign-up")
     public Result<Void> createMember(@RequestBody @Valid final RequestMember member) {
@@ -40,11 +46,17 @@ public class MemberController {
     }
 
     @PatchMapping("/update")
-    public Result<Void> updateMember(@RequestBody @Valid RequestUpdate updateMember){
+    public Result<Void> updateMember(@RequestBody @Valid final RequestUpdate updateMember){
         memberService.updateMember(updateMember);
         return Result.success();
     }
 
 
+    @PostMapping("/findpw" )
+    public Result<Void> sendEmail(@RequestBody final RequestFindPw requestFindPw){
+        Mail dto = mailService.createMailAndChangePassword(requestFindPw.email());
+        mailService.mailSend(dto);
 
+        return Result.success();
+    }
 }

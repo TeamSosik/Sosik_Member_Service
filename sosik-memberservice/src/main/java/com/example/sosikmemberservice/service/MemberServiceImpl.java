@@ -40,8 +40,7 @@ public class MemberServiceImpl {
 
     public MemberEntity findMember(String email){
          return memberRepository.findByEmail(new Email(email))
-                .orElseThrow(IllegalArgumentException::new);
-
+                 .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
     }
 
     public RequestMember createMember(RequestMember memberDTO) {
