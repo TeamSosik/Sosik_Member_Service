@@ -5,15 +5,16 @@ import com.example.sosikmemberservice.dto.response.ResponseAuth;
 import com.example.sosikmemberservice.dto.response.Result;
 import com.example.sosikmemberservice.model.Mail;
 import com.example.sosikmemberservice.service.MailService;
+import com.example.sosikmemberservice.dto.request.RequestLogin;
+import com.example.sosikmemberservice.dto.request.RequestLogout;
+import com.example.sosikmemberservice.dto.request.RequestMember;
+import com.example.sosikmemberservice.dto.request.RequestUpdate;
+import com.example.sosikmemberservice.dto.response.ResponseAuth;
+import com.example.sosikmemberservice.dto.response.Result;
 import com.example.sosikmemberservice.service.MemberServiceImpl;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -49,6 +50,7 @@ public class MemberController {
         memberService.updateMember(updateMember);
         return Result.success();
     }
+
 
     @PostMapping("/findpw" )
     public Result<Void> sendEmail(@RequestBody final RequestFindPw requestFindPw){

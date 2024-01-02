@@ -3,10 +3,13 @@ package com.example.sosikmemberservice.service;
 
 import com.example.sosikmemberservice.dto.request.RequestLogin;
 import com.example.sosikmemberservice.dto.request.RequestMember;
+import com.example.sosikmemberservice.dto.request.RequestUpdate;
 import com.example.sosikmemberservice.model.entity.MemberEntity;
 
 import com.example.sosikmemberservice.exception.ApplicationException;
+import com.example.sosikmemberservice.model.entity.WeightEntity;
 import com.example.sosikmemberservice.repository.MemberRepository;
+import com.example.sosikmemberservice.repository.WeightRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -34,10 +37,14 @@ class MemberServiceImplTest {
     private static final MemberEntity testMember2= testMember2();
     private static final RequestMember testMemberDto= testMemberDto();
 
+    private static final WeightEntity testWeightDto = testWeight();
+
     @InjectMocks
     private MemberServiceImpl memberService;
     @Mock
     private MemberRepository memberRepository;
+    @Mock
+    private WeightRepository weightRepository;
     @Mock
     private BCryptPasswordEncoder encoder;
 
@@ -70,6 +77,57 @@ class MemberServiceImplTest {
 
         assertThatThrownBy(()-> memberService.createMember(testMemberDto())).isInstanceOf(ApplicationException.class);
 
+    }
+
+    @DisplayName("회원정보 수정에 성공한다.")
+    @Test
+    void givenTestMemberWhenUpdateMemberThenUpdateSuccess(){
+        RequestUpdate testUpdateSuccessDto = updateTest();
+        given(memberRepository.findById(testUpdateSuccessDto.memberId())).willReturn(Optional.of(testMember1));
+        given(weightRepository.findById(testUpdateSuccessDto.weightId())).willReturn(Optional.of(testWeightDto));
+        testMember1.updateMember(testUpdateSuccessDto);
+        testWeightDto.updateWeight(testUpdateSuccessDto);
+        assertThat(memberService.updateMember(testUpdateSuccessDto)).isEqualTo("ok");
+
+    }
+    @DisplayName("회원정보 수정에 실패한다. - 객체에 null 값이 있음")
+    @Test
+    void givenTestMemberWhenUpdateMemberThrowUPDATEMEMBER_EMPTY_COLUMN_ERROR(){
+        RequestUpdate updateTestMember = updateTest2(); //null값이 있는 객체
+        assertThatThrownBy(()-> memberService.updateMember(updateTestMember)).isInstanceOf(IllegalArgumentException.class);
+    }
+
+
+    private static WeightEntity testWeight(){
+        return WeightEntity.builder()
+                .id(1L)
+                .currentWeight(BigDecimal.valueOf(160))
+                .goalWeight(BigDecimal.valueOf(160))
+                .member(testMember1())
+                .build();
+    }
+    private static RequestUpdate updateTest(){
+        return RequestUpdate.builder()
+                .memberId(1L)
+                .weightId(1L)
+                .currentWeight(BigDecimal.valueOf(200))
+                .goalWeight(BigDecimal.valueOf(150))
+                .height(BigDecimal.valueOf(175))
+                .profileImage("c/trij/nrt")
+                .nickname("Minutaurus")
+                .activityLevel(1)
+                .build();
+    }
+    private static RequestUpdate updateTest2(){ //현재 체중값이 null
+        return RequestUpdate.builder()
+                .memberId(1L)
+                .weightId(1L)
+                .goalWeight(BigDecimal.valueOf(150))
+                .height(BigDecimal.valueOf(175))
+                .profileImage("c/trij/nrt")
+                .nickname("Minutaurus")
+                .activityLevel(1)
+                .build();
     }
 
 
@@ -114,7 +172,6 @@ class MemberServiceImplTest {
                 .nickname("Minutaurus2")
                 .profileImage("c/trij/nrt")
                 .birthday("2023/05/11")
-
                 .build();
     }
 }
