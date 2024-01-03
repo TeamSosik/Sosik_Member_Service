@@ -2,6 +2,7 @@ package com.example.sosikmemberservice.security;
 
 import com.example.sosikmemberservice.config.filter.JwtFilter;
 import com.example.sosikmemberservice.exception.CustomAuthenticationentryPoint;
+import com.example.sosikmemberservice.repository.RefreshTokenRepository;
 import com.example.sosikmemberservice.service.MemberServiceImpl;
 import com.example.sosikmemberservice.util.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtTokenUtils jwtTokenUtils;
-    private final MemberServiceImpl memberService;
+    private final RefreshTokenRepository repository;
     @Bean
     protected SecurityFilterChain filterChain(HttpSecurity http, HandlerMappingIntrospector introspect) throws Exception {
         return http
@@ -29,7 +30,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(new MvcRequestMatcher(introspect, "/**")).permitAll())
-                .addFilterBefore(new JwtFilter(jwtTokenUtils,memberService), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtFilter(jwtTokenUtils,repository), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
                         httpSecurityExceptionHandlingConfigurer
                                 .authenticationEntryPoint(new CustomAuthenticationentryPoint()))

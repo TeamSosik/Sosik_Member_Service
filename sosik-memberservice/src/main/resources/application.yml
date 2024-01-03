@@ -1,5 +1,5 @@
 server:
-  port: 9001
+  port: 9000
 
 spring:
   mail:
@@ -46,7 +46,7 @@ spring:
     import: "optional:configserver:"
   data:
     redis:
-      host: 192.168.0.17
+      host: localhost
       port: 6379
       password: redis
 eureka:

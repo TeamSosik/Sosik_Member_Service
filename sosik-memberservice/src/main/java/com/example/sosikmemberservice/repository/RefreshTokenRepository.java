@@ -13,6 +13,9 @@ public interface RefreshTokenRepository {
 
     String logout(final RequestLogout memberIdentifier);
 
+    boolean existsByRefreshToken(final String refreshToken);
+
+
 
 
 
