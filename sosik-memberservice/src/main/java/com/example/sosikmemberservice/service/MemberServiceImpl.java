@@ -82,7 +82,6 @@ public class MemberServiceImpl {
     }
 
 
-
       public ResponseAuth login(RequestLogin login) {
         log.info("================= 로긴 서비스 단");
         log.info(login.email());
@@ -91,15 +90,14 @@ public class MemberServiceImpl {
         if (!encoder.matches(login.password(), entity.getPassword())) {
             throw new ApplicationException(ErrorCode.INVALID_PASSWORD);
         }
-        UsernamePasswordAuthenticationToken authenticationToken
-                = new UsernamePasswordAuthenticationToken(login.email(), login.password());
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+          String accessToken = jwtTokenUtils.createAccessToken(login.email(), "USER");
+          String refreshToken = jwtTokenUtils.createRefreshToken(login.email(), "USER");
+          saveToken(refreshToken,login.email());
 
-        ResponseAuth responseAuth = jwtTokenUtils.generateToken(authentication);
-        saveToken(responseAuth.refreshToken() ,entity);
-
-        return responseAuth;
-
+        return  ResponseAuth.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
     }
 
     public String logout(RequestLogout email) {
@@ -107,8 +105,12 @@ public class MemberServiceImpl {
         refreshTokenRepository.logout(email);
         return "로그아웃 완료";
     }
-    private void saveToken(String refreshToken,MemberEntity member) {
-        refreshTokenRepository.save(refreshToken,member.getEmail().getValue() );
+    private void saveToken(String refreshToken,String email) {
+        refreshTokenRepository.save(refreshToken,email);
+    }
+
+    public boolean existsRefreshToken(String refreshToken) {
+        return refreshTokenRepository.existsByRefreshToken(refreshToken);
     }
 
 }

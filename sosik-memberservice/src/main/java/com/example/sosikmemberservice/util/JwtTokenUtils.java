@@ -3,6 +3,11 @@ package com.example.sosikmemberservice.util;
 import com.example.sosikmemberservice.dto.response.ResponseAuth;
 import com.example.sosikmemberservice.exception.ApplicationException;
 import com.example.sosikmemberservice.exception.ErrorCode;
+import com.example.sosikmemberservice.model.Member;
+import com.example.sosikmemberservice.model.entity.MemberEntity;
+import com.example.sosikmemberservice.model.vo.Email;
+import com.example.sosikmemberservice.repository.MemberRepository;
+import com.example.sosikmemberservice.repository.RefreshTokenRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -12,6 +17,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,49 +32,48 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
+
 public class JwtTokenUtils {
         private final Key key;
         private final String secretKey;
         private final Long accessTokenValidityInSeconds;
         private final Long refreshTokenValidityInSeconds;
+        private final MemberRepository memberRepository;
 
         public JwtTokenUtils(@Value("${jwt.secret-key}") final String secretKey,
                              @Value("#{T(Long).parseLong('${jwt.access-token-validity-in-seconds}')}") final Long accessTokenValidityInSeconds,
-                             @Value("#{T(Long).parseLong('${jwt.refresh-token-validity-in-seconds}')}") final Long refreshTokenValidityInSeconds) {
+                             @Value("#{T(Long).parseLong('${jwt.refresh-token-validity-in-seconds}')}") final Long refreshTokenValidityInSeconds,
+                             final MemberRepository memberRepository) {
             byte[] keyBytes = Decoders.BASE64.decode(secretKey);
             this.key = Keys.hmacShaKeyFor(keyBytes);
             this.secretKey = secretKey;
             this.accessTokenValidityInSeconds = accessTokenValidityInSeconds;
             this.refreshTokenValidityInSeconds = refreshTokenValidityInSeconds;
+            this.memberRepository = memberRepository;
         }
 
-    // 유저 정보를 가지고 AccessToken, RefreshToken 을 생성하는 메서드
-        public ResponseAuth generateToken(Authentication authentication) {
-            // 권한 가져오기
-            String authorities = authentication.getAuthorities().stream()
-                    .map(GrantedAuthority::getAuthority)
-                    .collect(Collectors.joining(","));
+        // 유저 정보를 가지고 AccessToken, RefreshToken 을 생성하는 메서드
+        // Access Token 생성.
+        public String createAccessToken(String email, String role){
+            return this.createToken(email, role, accessTokenValidityInSeconds);
+        }
+        // Refresh Token 생성.
+        public String createRefreshToken(String email, String role) {
+            return this.createToken(email, role, refreshTokenValidityInSeconds);
+        }
 
-            long now = (new Date()).getTime();
-            // Access Token 생성
-            Date accessTokenExpiresIn = new Date(now + accessTokenValidityInSeconds);
-            String accessToken = Jwts.builder()
-                    .setSubject(authentication.getName())
-                    .claim("auth", authorities)
-                    .setExpiration(accessTokenExpiresIn)
-                    .signWith(createKey())
-                    .compact();
+        // Create token
+        public String createToken(String email, String roles, long tokenValid) {
+            Claims claims = Jwts.claims().setSubject(email); // claims 생성 및 payload 설정
+            claims.put("auth", roles); // 권한 설정, key/ value 쌍으로 저장
 
-            // Refresh Token 생성
-            String refreshToken = Jwts.builder()
-                    .setExpiration(new Date(now + refreshTokenValidityInSeconds))
-                    .signWith(createKey())
-                    .compact();
-
-            return ResponseAuth.builder()
-                    .accessToken(accessToken)
-                    .refreshToken(refreshToken)
-                    .build();
+            Date date = new Date();
+            return Jwts.builder()
+                    .setClaims(claims) // 발행 유저 정보 저장
+                    .setIssuedAt(date) // 발행 시간 저장
+                    .setExpiration(new Date(date.getTime() + tokenValid)) // 토큰 유효 시간 저장
+                    .signWith(SignatureAlgorithm.HS256, createKey()) // 해싱 알고리즘 및 키 설정
+                    .compact(); // 생성
         }
 
         private SecretKey createKey() {
@@ -74,23 +81,16 @@ public class JwtTokenUtils {
             return Keys.hmacShaKeyFor(secretKeyBytes);
         }
 
-
-
         private Claims parseClaimsJws(final String token) {
-            String token1 = token;
             final SecretKey signingKey = createKey();
             return Jwts.parserBuilder()
                     .setSigningKey(signingKey)
                     .build()
                     .parseClaimsJws(token)
-
                     .getBody();
         }
-        private Claims extractClaims(String token){
-            final SecretKey signingKey = createKey();
-            return Jwts.parserBuilder().setSigningKey(signingKey)
-                    .build()
-                    .parseClaimsJws(token).getBody();
+        public String getUserEmail(String token) {
+            return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
         }
         public Authentication getAuthentication(String accessToken) {
             // 토큰 복호화
@@ -107,9 +107,34 @@ public class JwtTokenUtils {
                             .collect(Collectors.toList());
 
             // UserDetails 객체를 만들어서 Authentication 리턴
-            UserDetails principal = new User(claims.getSubject(), "", authorities);
+            MemberEntity entity = memberRepository.findByEmail(new Email(claims.getSubject())).get();
+            UserDetails principal = Member.fromEntity(entity);
             return new UsernamePasswordAuthenticationToken(principal, "", authorities);
         }
+
+
+        // 어세스 토큰 헤더 설정
+        public void setHeaderAccessToken(HttpServletResponse response, String accessToken) {
+            response.setHeader("authorization", "bearer "+ accessToken);
+        }
+
+        // 리프레시 토큰 헤더 설정
+        public void setHeaderRefreshToken(HttpServletResponse response, String refreshToken) {
+            response.setHeader("refreshToken", "bearer "+ refreshToken);
+        }
+
+        public String resolveAccessToken(HttpServletRequest request) {
+            if(request.getHeader("authorization") != null )
+                return request.getHeader("authorization").substring(7);
+            return null;
+        }
+        // Request의 Header에서 RefreshToken 값을 가져옵니다. "authorization" : "token'
+        public String resolveRefreshToken(HttpServletRequest request) {
+            if(request.getHeader("refreshToken") != null )
+                return request.getHeader("refreshToken").substring(7);
+            return null;
+        }
+
 
         public boolean validateToken(String token) {
             try {
@@ -130,8 +155,11 @@ public class JwtTokenUtils {
             return true;
         }
 
-        public String findSubject(final String token) {
-            Claims claims = parseClaimsJws(token);
-            return claims.getSubject();
+
+        public String getRoles(String email) {
+            return memberRepository.findByEmail(new Email(email)).get().getRole().toString();
+
         }
+
+
 }
