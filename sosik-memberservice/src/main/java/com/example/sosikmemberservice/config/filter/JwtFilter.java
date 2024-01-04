@@ -32,6 +32,7 @@ public class JwtFilter extends OncePerRequestFilter {
         final String accessToken = utils.resolveAccessToken(request);
         final String refreshToken = utils.resolveRefreshToken(request);
 
+
         if (accessToken != null) {
             // 어세스 토큰이 유효한 상황
             if (utils.validateToken(accessToken)) {
@@ -67,10 +68,14 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        String[] excludePath = {"/members/sign-up", "/members/login"};
+        String[] excludePath = {"/members/sign-up", "/members/login","/h2-console"};
         String path = request.getRequestURI();
         return Arrays.stream(excludePath).anyMatch(path::startsWith);
     }
+
+
+
+
 
     public void setAuthentication(String token) {
         // 토큰으로부터 유저 정보를 받아옵니다.
