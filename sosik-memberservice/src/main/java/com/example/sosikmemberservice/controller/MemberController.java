@@ -24,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 
@@ -35,11 +36,12 @@ public class MemberController {
 
     private final MemberServiceImpl memberService;
     private final MailService mailService;
-    private final JwtTokenUtils utils;
 
     @PostMapping("/sign-up")
-    public Result<Void> createMember(@RequestBody @Valid final RequestMember member) {
-        memberService.createMember(member);
+    public Result<Void> createMember(@RequestPart @Valid RequestMember member,
+                                     @RequestPart(required = false)  MultipartFile profileImage) {
+
+        memberService.createMember(member,profileImage);
         return Result.success();
     }
 

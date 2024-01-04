@@ -1,7 +1,14 @@
 server:
   port: 9000
 
+file:
+  location: /Users/gimmin-u/Desktop/final_project/file
+
+
 spring:
+  servlet:
+    multipart:
+      max-file-size: 20MB
   mail:
     host: smtp.naver.com
     port: 465
