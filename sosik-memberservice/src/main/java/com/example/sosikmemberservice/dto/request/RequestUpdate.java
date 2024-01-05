@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 public record RequestUpdate(Long memberId,
                            Long weightId,
                            BigDecimal currentWeight,
-                           BigDecimal goalWeight,
+                           BigDecimal targetWeight,
                            BigDecimal height,
                            Integer activityLevel,
                            String nickname,

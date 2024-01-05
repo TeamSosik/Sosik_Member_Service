@@ -19,20 +19,20 @@ public class GetWeight {
 
     private Long id;
     private BigDecimal currentWeight;
-    private BigDecimal goalWeight;
+    private BigDecimal targetWeight;
 
     @Builder
-    public GetWeight(Long id, BigDecimal currentWeight, BigDecimal goalWeight) {
+    public GetWeight(Long id, BigDecimal currentWeight, BigDecimal targetWeight) {
         this.id = id;
         this.currentWeight = currentWeight;
-        this.goalWeight = goalWeight;
+        this.targetWeight = targetWeight;
     }
 
     public static GetWeight create(WeightEntity weight) {
         return GetWeight.builder()
                 .id(weight.getId())
                 .currentWeight(weight.getCurrentWeight())
-                .goalWeight(weight.getGoalWeight())
+                .targetWeight(weight.getTargetWeight())
                 .build();
     }
 
