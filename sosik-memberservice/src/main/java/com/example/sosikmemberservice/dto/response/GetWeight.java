@@ -32,7 +32,7 @@ public class GetWeight {
         return GetWeight.builder()
                 .id(weight.getId())
                 .currentWeight(weight.getCurrentWeight())
-                .targetWeight(weight.getGoalWeight())
+                .targetWeight(weight.getTargetWeight())
                 .build();
     }
 

@@ -27,19 +27,19 @@ public class WeightEntity {
     private BigDecimal currentWeight;
 
     @Column(precision = 4, scale = 1)
-    private BigDecimal goalWeight;
+    private BigDecimal targetWeight;
 
     @Builder
     public WeightEntity(
             final Long id,
             final MemberEntity member,
             final BigDecimal currentWeight,
-            final BigDecimal goalWeight
+            final BigDecimal targetWeight
     ){
         this.id = id;
         this.member= member;
         this.currentWeight = currentWeight;
-        this.goalWeight = goalWeight;
+        this.targetWeight = targetWeight;
     }
 
     public static WeightEntity create(BigDecimal currentWeight, BigDecimal targetWeight) {
@@ -52,7 +52,7 @@ public class WeightEntity {
 
 
     public void updateWeight(RequestUpdate updateMember){
-        this.goalWeight=updateMember.goalWeight();
+        this.targetWeight=updateMember.targetWeight();
         this.currentWeight=updateMember.currentWeight();
     }
 
