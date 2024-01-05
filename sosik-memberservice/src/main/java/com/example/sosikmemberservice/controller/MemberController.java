@@ -1,6 +1,7 @@
 package com.example.sosikmemberservice.controller;
 
 import com.example.sosikmemberservice.dto.request.*;
+import com.example.sosikmemberservice.dto.response.GetMemberDTO;
 import com.example.sosikmemberservice.dto.response.ResponseAuth;
 import com.example.sosikmemberservice.dto.response.Result;
 import com.example.sosikmemberservice.model.Mail;
@@ -71,6 +72,13 @@ public class MemberController {
     public Result<Void> test(@RequestBody final RequestLogin RequestLogin, @AuthenticationPrincipal Member user){
         log.info(user.getNickname());
         return Result.success();
+    }
+
+    @GetMapping("/v1/detail")
+    public Result<GetMemberDTO> getMember(@AuthenticationPrincipal Member user) {
+
+        GetMemberDTO result = memberService.getMember(user.getMemberId());
+        return Result.success(result);
     }
 
 }

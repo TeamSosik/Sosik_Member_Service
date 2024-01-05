@@ -47,4 +47,12 @@ public class WeightEntity {
         this.goalWeight=updateMember.goalWeight();
         this.currentWeight=updateMember.currentWeight();
     }
+
+    // 연관관계 메서드
+    public void addMember(MemberEntity member) {
+
+        this.member = member;
+        member.getWeight().add(this);
+
+    }
 }

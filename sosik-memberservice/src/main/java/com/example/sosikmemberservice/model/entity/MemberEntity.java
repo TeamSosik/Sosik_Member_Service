@@ -60,7 +60,9 @@ public class MemberEntity  {
 
 
 
-    public MemberEntity(final Email email,
+    public MemberEntity(
+                        final Long memberId,
+                        final Email email,
                         final Name name,
                         final String password,
                         final String gender,
@@ -71,6 +73,7 @@ public class MemberEntity  {
                         final String birthday,
                         final Integer tdeeCalculation
     ){
+        this.memberId = memberId;
         this.email = email;
         this.name = name;
         this.password=password;
@@ -93,6 +96,7 @@ public class MemberEntity  {
 
     @Builder
     public MemberEntity(
+            final Long memberId,
             final String email,
             final String name,
             final String password,
@@ -104,7 +108,7 @@ public class MemberEntity  {
             final String birthday,
             final Integer tdeeCalculation
     ){
-        this(new Email(email),new Name(name),password,gender,height,activityLevel,nickname,new ProfileImageUrl(profileImage),birthday,tdeeCalculation);
+        this(memberId, new Email(email),new Name(name),password,gender,height,activityLevel,nickname,new ProfileImageUrl(profileImage),birthday,tdeeCalculation);
     }
 
 }
