@@ -73,6 +73,10 @@ public class MemberServiceImpl {
                 .tdeeCalculation(memberDTO.tdeeCalculation())
                 .build();
 
+        // 무게 추가
+        WeightEntity weight = WeightEntity.create(memberDTO.currentWeight(), memberDTO.targetWeight());
+        weight.addMember(member);
+
         memberRepository.save(member);
         return memberDTO;
 
