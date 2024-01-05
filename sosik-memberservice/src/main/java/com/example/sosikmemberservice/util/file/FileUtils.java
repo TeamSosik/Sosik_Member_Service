@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Slf4j
@@ -75,7 +76,7 @@ public class FileUtils {
 
     public ResultFileStore storeProfileFile(MultipartFile multipartFile) throws IOException {
         String folderPath = makeProfileFolder();
-        if(multipartFile.equals("cat")){
+        if(Objects.isNull(multipartFile)){
             log.info("등록을 안하셨군요!");
            return new ResultFileStore(folderPath,"cat.jpg");
         }
