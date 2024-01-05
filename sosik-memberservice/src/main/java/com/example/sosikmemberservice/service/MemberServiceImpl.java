@@ -81,7 +81,7 @@ public class MemberServiceImpl {
 
     @Transactional
     public String updateMember(RequestUpdate updateMember) {
-        if(updateMember.memberId() == null || updateMember.currentWeight() == null || updateMember.goalWeight() == null
+        if(updateMember.memberId() == null || updateMember.currentWeight() == null || updateMember.targetWeight() == null
                 || updateMember.weightId() == null || updateMember.activityLevel() == null
                 || updateMember.height() == null || updateMember.nickname() == null || updateMember.profileImage() == null )
         {

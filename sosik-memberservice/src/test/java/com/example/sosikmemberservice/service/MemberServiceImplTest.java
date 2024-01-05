@@ -105,7 +105,7 @@ class MemberServiceImplTest {
         return WeightEntity.builder()
                 .id(1L)
                 .currentWeight(BigDecimal.valueOf(160))
-                .goalWeight(BigDecimal.valueOf(160))
+                .targetWeight(BigDecimal.valueOf(160))
                 .member(testMember1())
                 .build();
     }
@@ -114,7 +114,7 @@ class MemberServiceImplTest {
                 .memberId(1L)
                 .weightId(1L)
                 .currentWeight(BigDecimal.valueOf(200))
-                .goalWeight(BigDecimal.valueOf(150))
+                .targetWeight(BigDecimal.valueOf(150))
                 .height(BigDecimal.valueOf(175))
                 .profileImage("c/trij/nrt")
                 .nickname("Minutaurus")
@@ -125,7 +125,7 @@ class MemberServiceImplTest {
         return RequestUpdate.builder()
                 .memberId(1L)
                 .weightId(1L)
-                .goalWeight(BigDecimal.valueOf(150))
+                .targetWeight(BigDecimal.valueOf(150))
                 .height(BigDecimal.valueOf(175))
                 .profileImage("c/trij/nrt")
                 .nickname("Minutaurus")
@@ -209,13 +209,13 @@ class MemberServiceImplTest {
         WeightEntity weight1 = WeightEntity.builder()
                 .id(memberId)
                 .currentWeight(new BigDecimal(60.1))
-                .goalWeight(new BigDecimal(50.5))
+                .targetWeight(new BigDecimal(50.5))
                 .build();
         // 과거 기록
         WeightEntity weight2 = WeightEntity.builder()
                 .id(2L)
                 .currentWeight(new BigDecimal(70.1))
-                .goalWeight(new BigDecimal(60.1))
+                .targetWeight(new BigDecimal(60.1))
                 .build();
 
         weight1.addMember(member);
