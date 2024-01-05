@@ -33,6 +33,7 @@ import java.security.Principal;
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/members")
+@CrossOrigin
 public class MemberController {
 
     private final MemberServiceImpl memberService;
