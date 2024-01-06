@@ -42,6 +42,14 @@ public class WeightEntity {
         this.targetWeight = targetWeight;
     }
 
+    public static WeightEntity create(BigDecimal currentWeight, BigDecimal targetWeight) {
+
+        return WeightEntity.builder()
+                .currentWeight(currentWeight)
+                .goalWeight(targetWeight)
+                .build();
+    }
+
 
     public void updateWeight(RequestUpdate updateMember){
         this.targetWeight=updateMember.targetWeight();

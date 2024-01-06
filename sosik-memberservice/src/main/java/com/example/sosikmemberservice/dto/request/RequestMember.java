@@ -24,7 +24,9 @@ public record RequestMember(
         Integer activityLevel,
         String nickname,
         String birthday,
-        Integer tdeeCalculation
+        Integer tdeeCalculation,
+        BigDecimal currentWeight,
+        BigDecimal targetWeight
 
 )
 {
