@@ -46,7 +46,7 @@ public class WeightEntity {
 
         return WeightEntity.builder()
                 .currentWeight(currentWeight)
-                .goalWeight(targetWeight)
+                .targetWeight(targetWeight)
                 .build();
     }
 
