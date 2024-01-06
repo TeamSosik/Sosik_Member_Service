@@ -4,7 +4,7 @@ package com.example.sosikmemberservice.service;
 import com.example.sosikmemberservice.dto.request.RequestLogin;
 import com.example.sosikmemberservice.dto.request.RequestMember;
 import com.example.sosikmemberservice.dto.request.RequestUpdate;
-import com.example.sosikmemberservice.dto.response.GetMemberDTO;
+import com.example.sosikmemberservice.dto.response.GetMember;
 import com.example.sosikmemberservice.exception.ErrorCode;
 import com.example.sosikmemberservice.model.entity.MemberEntity;
 
@@ -228,7 +228,7 @@ class MemberServiceImplTest {
 
         // when
         // dto로 변환하기
-        GetMemberDTO result = memberService.getMember(memberId);
+        GetMember result = memberService.getMember(memberId);
 
         // then
         assertThat(result.getMemberId()).isEqualTo(memberId);

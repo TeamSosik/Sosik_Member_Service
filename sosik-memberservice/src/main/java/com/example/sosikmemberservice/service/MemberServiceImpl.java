@@ -5,7 +5,7 @@ import com.example.sosikmemberservice.dto.request.RequestLogin;
 import com.example.sosikmemberservice.dto.request.RequestLogout;
 import com.example.sosikmemberservice.dto.request.RequestMember;
 import com.example.sosikmemberservice.dto.request.RequestUpdate;
-import com.example.sosikmemberservice.dto.response.GetMemberDTO;
+import com.example.sosikmemberservice.dto.response.GetMember;
 import com.example.sosikmemberservice.dto.response.ResponseAuth;
 import com.example.sosikmemberservice.model.Member;
 import com.example.sosikmemberservice.model.entity.MemberEntity;
@@ -132,7 +132,7 @@ public class MemberServiceImpl {
         return refreshTokenRepository.existsByRefreshToken(refreshToken);
     }
 
-    public GetMemberDTO getMember(Long memberId) {
+    public GetMember getMember(Long memberId) {
 
         MemberEntity member = memberRepository.findById(memberId).orElseThrow(() -> {
             return new ApplicationException(ErrorCode.USER_NOT_FOUND);
@@ -140,7 +140,7 @@ public class MemberServiceImpl {
 
         // 조회 완료
         // dto 생성하기
-        GetMemberDTO getMemberDTO = GetMemberDTO.create(member);
+        GetMember getMemberDTO = GetMember.create(member);
 
         return getMemberDTO;
     }

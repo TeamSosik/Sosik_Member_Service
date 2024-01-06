@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
-public class GetMemberDTO {
+public class GetMember {
 
 
     private Long memberId;
@@ -44,7 +44,7 @@ public class GetMemberDTO {
     private List<GetWeight> weightList;
 
     @Builder
-    public GetMemberDTO(Long memberId, String email, String name, String gender, BigDecimal height, MemberRole role, Integer activityLevel, String nickname, String profileImage, String birthday, Integer tdeeCalculation, List<GetWeight> weightList) {
+    public GetMember(Long memberId, String email, String name, String gender, BigDecimal height, MemberRole role, Integer activityLevel, String nickname, String profileImage, String birthday, Integer tdeeCalculation, List<GetWeight> weightList) {
         this.memberId = memberId;
         this.email = email;
         this.name = name;
@@ -59,9 +59,9 @@ public class GetMemberDTO {
         this.weightList = weightList;
     }
 
-    public static GetMemberDTO create(MemberEntity member) {
+    public static GetMember create(MemberEntity member) {
 
-        GetMemberDTO getMemberDTO = GetMemberDTO.builder()
+        GetMember getMemberDTO = GetMember.builder()
                 .memberId(member.getMemberId())
                 .email(member.getEmail().getValue())
                 .name(member.getName().getValue())
