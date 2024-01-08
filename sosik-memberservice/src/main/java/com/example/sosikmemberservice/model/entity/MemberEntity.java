@@ -6,9 +6,11 @@ import com.example.sosikmemberservice.model.MemberRole;
 import com.example.sosikmemberservice.model.vo.Email;
 import com.example.sosikmemberservice.model.vo.Name;
 import com.example.sosikmemberservice.model.vo.ProfileImageUrl;
+import com.example.sosikmemberservice.util.file.ResultFileStore;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -18,7 +20,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "member")
-public class MemberEntity  {
+public class MemberEntity extends AuditingFields{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -91,7 +93,10 @@ public class MemberEntity  {
         this.height=updateMember.height();
         this.activityLevel=updateMember.activityLevel();
         this.nickname=updateMember.nickname();
-        this.profileImage= new ProfileImageUrl(updateMember.profileImage());
+        this.tdeeCalculation = updateMember.tdeeCalculation();
+    }
+    public void updateProfileUrl(ResultFileStore resultFileStore){
+         this.profileImage = new ProfileImageUrl(resultFileStore.folderPath()+"/"+resultFileStore.storeFileName());
     }
 
     @Builder
