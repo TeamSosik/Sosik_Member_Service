@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -26,8 +25,8 @@ public class CustomUserDetailService implements UserDetailsService {
     private UserDetails createUserDetails(Member member){
         String password = member.getPassword();
         return User.builder()
-                .username(member.getEmail())
-                .roles(member.getMemberRole().name())
+                .username(member.email())
+                .roles(member.memberRole().name())
                 .password(password)
                 .build();
     }

@@ -1,4 +1,4 @@
-package com.example.sosikmemberservice.dto.response;
+package com.example.sosikmemberservice.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,18 +21,6 @@ public class Result<T>{
         return new Result<T>("데이터 전송에 성공하였습니다!",result);
     }
 
-    public String toStream(){
-        if(result ==null){
-            return "{" +
-                    "\"resultCode\":" + "\""+resultCode + "\"," +
-                    "\"result\":" + null + "}";
-        }
-        {
-            return "{" +
-                    "\" resultCode\":" +"\""+resultCode + "\"," +
-                    "\"result\" :" + "\"" + result + "\"" + "}";
 
-        }
 
-    }
 }

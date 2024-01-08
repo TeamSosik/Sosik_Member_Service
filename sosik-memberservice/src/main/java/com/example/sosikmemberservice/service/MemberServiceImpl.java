@@ -3,14 +3,14 @@ package com.example.sosikmemberservice.service;
 
 import com.example.sosikmemberservice.dto.request.RequestLogin;
 import com.example.sosikmemberservice.dto.request.RequestLogout;
-import com.example.sosikmemberservice.dto.request.RequestMember;
-import com.example.sosikmemberservice.dto.request.RequestUpdate;
+import com.example.sosikmemberservice.dto.request.RequestSignup;
+import com.example.sosikmemberservice.dto.request.RequestUpdateMember;
 import com.example.sosikmemberservice.dto.response.GetMember;
 import com.example.sosikmemberservice.dto.response.ResponseAuth;
-import com.example.sosikmemberservice.model.Member;
-import com.example.sosikmemberservice.model.entity.MemberEntity;
 import com.example.sosikmemberservice.exception.ApplicationException;
 import com.example.sosikmemberservice.exception.ErrorCode;
+import com.example.sosikmemberservice.model.Member;
+import com.example.sosikmemberservice.model.entity.MemberEntity;
 import com.example.sosikmemberservice.model.entity.WeightEntity;
 import com.example.sosikmemberservice.model.vo.Email;
 import com.example.sosikmemberservice.repository.MemberRepository;
@@ -22,9 +22,7 @@ import com.example.sosikmemberservice.util.file.ResultFileStore;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.core.Authentication;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,11 +30,13 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 
+@Transactional
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class MemberServiceImpl {
-
+public class MemberServiceImpl implements MemberService {
+    @Value("${file.location}")
+    private String uploadPath;
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder encoder;
     private final JwtTokenUtils jwtTokenUtils;
@@ -49,7 +49,7 @@ public class MemberServiceImpl {
                  .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
     }
 
-    public RequestMember createMember(RequestMember memberDTO,MultipartFile profileImage){
+    public RequestSignup createMember(RequestSignup memberDTO, MultipartFile profileImage){
         memberRepository.findByEmail(new Email(memberDTO.email())).ifPresent(it->{
             throw new ApplicationException(ErrorCode.DUPLICATED_USER_NAME);
         });
@@ -81,21 +81,18 @@ public class MemberServiceImpl {
         return memberDTO;
 
     }
-
-
-    @Transactional
-    public String updateMember(RequestUpdate updateMember) {
+    public void updateMember(RequestUpdateMember updateMember) {
         if(updateMember.memberId() == null || updateMember.currentWeight() == null || updateMember.targetWeight() == null
                 || updateMember.weightId() == null || updateMember.activityLevel() == null
                 || updateMember.height() == null || updateMember.nickname() == null || updateMember.profileImage() == null )
         {
-            throw new IllegalArgumentException(String.valueOf(ErrorCode.UPDATEMEMBER_EMPTY_COLUMN_ERROR));
+            throw new IllegalArgumentException(String.valueOf(ErrorCode.INTERNAL_SERVER_ERROR));
         };
         MemberEntity member = memberRepository.findById(updateMember.memberId()).get();
         WeightEntity weight = weightRepository.findById(updateMember.weightId()).get();
         member.updateMember(updateMember);
         weight.updateWeight(updateMember);
-        return "ok";
+
     }
 
 
@@ -118,13 +115,11 @@ public class MemberServiceImpl {
                 .member(member)
                 .build();
     }
-
-    public String logout(RequestLogout email) {
-
+    public void logout(RequestLogout email) {
         refreshTokenRepository.logout(email);
-        return "로그아웃 완료";
     }
-    private void saveToken(String refreshToken,String email) {
+
+    public void saveToken(String refreshToken, String email) {
         refreshTokenRepository.save(refreshToken,email);
     }
 
@@ -138,10 +133,22 @@ public class MemberServiceImpl {
             return new ApplicationException(ErrorCode.USER_NOT_FOUND);
         });
 
-        // 조회 완료
-        // dto 생성하기
-        GetMember getMemberDTO = GetMember.create(member);
-
-        return getMemberDTO;
+        return GetMember.create(member);
     }
+    public void createMemberByOauth(String email, String profileImage, String nickname, String password) {
+        MemberEntity member = MemberEntity.builder()
+                .name(nickname)
+                .password(encoder.encode(password))
+                .email(email)
+                .nickname(nickname)
+                .birthday("2021/02/02")
+                .profileImage(uploadPath +"/"+profileImage)
+                .build();
+
+        // 무게 추가
+        memberRepository.save(member);
+    }
+
 }
+
+

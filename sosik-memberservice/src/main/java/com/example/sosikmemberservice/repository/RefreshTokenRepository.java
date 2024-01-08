@@ -2,8 +2,6 @@ package com.example.sosikmemberservice.repository;
 
 import com.example.sosikmemberservice.dto.request.RequestLogout;
 
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.Optional;
 
 public interface RefreshTokenRepository {

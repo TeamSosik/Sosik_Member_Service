@@ -1,20 +1,17 @@
 package com.example.sosikmemberservice.util.file;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-
-import java.util.ArrayList;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-@Slf4j
+
 @Component
 public class FileUtils {
     @Value("${file.location}")
@@ -26,33 +23,21 @@ public class FileUtils {
 
     public List<ResultFileStore> storeFiles(List<MultipartFile> multipartFiles) throws IOException {
         List<ResultFileStore> storeFileResult = new ArrayList<>();
-
         if(!multipartFiles.isEmpty()){
             for(MultipartFile multipartFile: multipartFiles){
                 storeFileResult.add(storeFile(multipartFile));
             }
-
         }
         return storeFileResult;
     }
-
     public ResultFileStore storeFile(MultipartFile multipartFile) throws IOException{
         if(multipartFile.isEmpty()){
             return null;
         }
-
-        // 파일 이름
         String originalFilename= multipartFile.getOriginalFilename();
-        log.info("originalFilename :" + originalFilename);
-
-        // 파일 저장 이름
         String storeFileName = createStoreFileName(originalFilename);
-        log.info("storeFileName:" + storeFileName);
+        String folderPath = uploadPath;
 
-        // 폴더 생성
-        String folderPath = makeFolder();
-
-        //이미지 저장
         multipartFile.transferTo(new File(getFullPath(storeFileName)));
 
         return new ResultFileStore(folderPath,storeFileName);
@@ -62,49 +47,20 @@ public class FileUtils {
         String uuid = UUID.randomUUID().toString();
         return uuid + "_" + originalFileName;
     }
-
-    private String makeFolder(){
-        String folderPath = uploadPath;
-        log.info("folderPath:" + folderPath);
-        File uploadPathFolder = new File(folderPath);
-
-        if(uploadPathFolder.exists() == false){
-            uploadPathFolder.mkdirs();
-        }
-        return folderPath;
-    }
-
     public ResultFileStore storeProfileFile(MultipartFile multipartFile) throws IOException {
-        String folderPath = makeProfileFolder();
+        String folderPath = uploadPath;
         if(Objects.isNull(multipartFile)){
-            log.info("등록을 안하셨군요!");
            return new ResultFileStore(folderPath,"cat.jpg");
         }
         else{
         String originalFilename = multipartFile.getOriginalFilename();
-        log.info("originalFilename : " + originalFilename);
-
         String storeFileName = createStoreFileName(originalFilename);
-        log.info("storeFileName " + storeFileName);
-
-
-
         multipartFile.transferTo(new File(getFullPath(storeFileName)));
 
         return new ResultFileStore(folderPath,storeFileName);
         }
     }
 
-    private String makeProfileFolder(){
-        String folderPath = uploadPath;
-        log.info("folderPath : " +folderPath);
-        File uploadPathFolder = new File(folderPath);
-
-        if(!uploadPathFolder.exists()){
-            uploadPathFolder.mkdirs();
-        }
-        return folderPath;
-    }
 
 
 }

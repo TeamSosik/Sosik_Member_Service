@@ -16,7 +16,7 @@ import java.util.Objects;
 @EqualsAndHashCode
 @Getter
 public class Name {
-    public static final int MAX_LENGTH = 15;
+    public static final int MAX_LENGTH = 50;
 
 
     @Column(name = "name", nullable = false, length = MAX_LENGTH)
@@ -37,7 +37,7 @@ public class Name {
 
     private void validate(String trimmedValue) {
         if(trimmedValue.length() >MAX_LENGTH){
-            throw new ApplicationException(ErrorCode.NAME_LENGTH_ERROR);
+            throw new ApplicationException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
 

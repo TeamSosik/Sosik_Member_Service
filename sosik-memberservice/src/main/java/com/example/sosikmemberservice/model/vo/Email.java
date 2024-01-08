@@ -1,7 +1,5 @@
 package com.example.sosikmemberservice.model.vo;
 
-import com.example.sosikmemberservice.exception.ApplicationException;
-import com.example.sosikmemberservice.exception.ErrorCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
@@ -10,7 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Objects;
 import java.util.regex.Pattern;
 
 @EqualsAndHashCode

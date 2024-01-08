@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Embeddable
-@NoArgsConstructor()
+@NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
 @Getter

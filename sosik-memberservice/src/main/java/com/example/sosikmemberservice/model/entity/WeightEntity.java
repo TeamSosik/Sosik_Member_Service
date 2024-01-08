@@ -1,7 +1,6 @@
 package com.example.sosikmemberservice.model.entity;
 
-import com.example.sosikmemberservice.dto.request.RequestUpdate;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.example.sosikmemberservice.dto.request.RequestUpdateMember;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -51,7 +50,7 @@ public class WeightEntity {
     }
 
 
-    public void updateWeight(RequestUpdate updateMember){
+    public void updateWeight(RequestUpdateMember updateMember){
         this.targetWeight=updateMember.targetWeight();
         this.currentWeight=updateMember.currentWeight();
     }

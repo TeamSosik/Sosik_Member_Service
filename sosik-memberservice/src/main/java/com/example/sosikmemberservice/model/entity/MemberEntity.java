@@ -1,7 +1,7 @@
 package com.example.sosikmemberservice.model.entity;
 
 
-import com.example.sosikmemberservice.dto.request.RequestUpdate;
+import com.example.sosikmemberservice.dto.request.RequestUpdateMember;
 import com.example.sosikmemberservice.model.MemberRole;
 import com.example.sosikmemberservice.model.vo.Email;
 import com.example.sosikmemberservice.model.vo.Name;
@@ -58,8 +58,6 @@ public class MemberEntity  {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<WeightEntity> weight = new ArrayList<>();
 
-
-
     public MemberEntity(
                         final Long memberId,
                         final Email email,
@@ -87,7 +85,7 @@ public class MemberEntity  {
 
     }
 
-    public void updateMember(RequestUpdate updateMember){
+    public void updateMember(RequestUpdateMember updateMember){
         this.height=updateMember.height();
         this.activityLevel=updateMember.activityLevel();
         this.nickname=updateMember.nickname();
@@ -108,7 +106,17 @@ public class MemberEntity  {
             final String birthday,
             final Integer tdeeCalculation
     ){
-        this(memberId, new Email(email),new Name(name),password,gender,height,activityLevel,nickname,new ProfileImageUrl(profileImage),birthday,tdeeCalculation);
+        this(memberId,
+             new Email(email),
+             new Name(name),
+             password,
+             gender,
+             height,
+             activityLevel,
+             nickname,
+             new ProfileImageUrl(profileImage),
+             birthday,
+             tdeeCalculation);
     }
 
 }

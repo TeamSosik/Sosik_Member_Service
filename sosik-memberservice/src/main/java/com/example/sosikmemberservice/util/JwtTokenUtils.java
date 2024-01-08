@@ -1,37 +1,34 @@
 package com.example.sosikmemberservice.util;
 
-import com.example.sosikmemberservice.dto.response.ResponseAuth;
 import com.example.sosikmemberservice.exception.ApplicationException;
 import com.example.sosikmemberservice.exception.ErrorCode;
 import com.example.sosikmemberservice.model.Member;
 import com.example.sosikmemberservice.model.entity.MemberEntity;
 import com.example.sosikmemberservice.model.vo.Email;
 import com.example.sosikmemberservice.repository.MemberRepository;
-import com.example.sosikmemberservice.repository.RefreshTokenRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import java.nio.charset.StandardCharsets;
-import java.security.Key;
-import java.util.*;
-import java.util.stream.Collectors;
-import javax.crypto.SecretKey;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.stream.Collectors;
+
 @Component
-@Slf4j
+
 
 public class JwtTokenUtils {
         private final Key key;
@@ -112,7 +109,6 @@ public class JwtTokenUtils {
             return new UsernamePasswordAuthenticationToken(principal, "", authorities);
         }
 
-
         // 어세스 토큰 헤더 설정
         public void setHeaderAccessToken(HttpServletResponse response, String accessToken) {
             response.setHeader("authorization", "bearer "+ accessToken);
@@ -134,32 +130,19 @@ public class JwtTokenUtils {
                 return request.getHeader("refreshToken").substring(7);
             return null;
         }
-
-
         public boolean validateToken(String token) {
             try {
                 parseClaimsJws(token);
             } catch (MalformedJwtException e) {
-                log.info("Invalid JWT token");
-                log.trace("Invalid JWT token trace = {}", e);
                 throw new ApplicationException(ErrorCode.MALFORMED_TOKEN_ERROR);
             } catch (ExpiredJwtException e) {
-                log.info("Expired JWT token");
-                log.trace("Expired JWT token trace = {}", e);
                 throw new ApplicationException(ErrorCode.EXPIRED_TOKEN_ERROR);
             } catch (UnsupportedJwtException e) {
-                log.info("Unsupported JWT token");
-                log.trace("Unsupported JWT token trace = {}", e);
                 throw new ApplicationException(ErrorCode.UNSUPPORTED_TOKEN_ERROR);
             }
             return true;
         }
 
-
-        public String getRoles(String email) {
-            return memberRepository.findByEmail(new Email(email)).get().getRole().toString();
-
-        }
 
 
 }

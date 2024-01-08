@@ -25,10 +25,11 @@ public class MailService {
 
         public Mail createMailAndChangePassword(String email) {
             String str = getTempPassword();
-            Mail dto = new Mail();
-            dto.setAddress(email);
-            dto.setTitle("Sosik 임시비밀번호 안내 이메일 입니다.");
-            dto.setMessage("안녕하세요. Sosik 임시비밀번호 안내 관련 이메일 입니다." + " 회원님의 임시 비밀번호는 " + str + " 입니다." + "로그인 후에 비밀번호를 변경을 해주세요");
+            Mail dto = Mail.builder()
+                    .title("Sosik 임시비밀번호 안내 이메일 입니다.")
+                    .address(email)
+                    .message("안녕하세요. Sosik 임시비밀번호 안내 관련 이메일 입니다.\" + \" 회원님의 임시 비밀번호는 \" + str + \" 입니다.\" + \"로그인 후에 비밀번호를 변경을 해주세요")
+                    .build();
             updatePassword(str, email);
             return dto;
         }
