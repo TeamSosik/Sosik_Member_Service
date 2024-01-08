@@ -1,10 +1,7 @@
 package com.example.sosikmemberservice.service;
 
 
-import com.example.sosikmemberservice.dto.request.RequestLogin;
-import com.example.sosikmemberservice.dto.request.RequestLogout;
-import com.example.sosikmemberservice.dto.request.RequestMember;
-import com.example.sosikmemberservice.dto.request.RequestUpdate;
+import com.example.sosikmemberservice.dto.request.*;
 import com.example.sosikmemberservice.dto.response.GetMember;
 import com.example.sosikmemberservice.dto.response.ResponseAuth;
 import com.example.sosikmemberservice.model.Member;
@@ -27,6 +24,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -44,13 +42,13 @@ public class MemberServiceImpl {
     private final RefreshTokenRepository refreshTokenRepository;
     private final FileUtils filestore;
 
-    public MemberEntity findMember(String email){
-         return memberRepository.findByEmail(new Email(email))
-                 .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
+    public MemberEntity findMember(String email) {
+        return memberRepository.findByEmail(new Email(email))
+                .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
     }
 
-    public RequestMember createMember(RequestMember memberDTO,MultipartFile profileImage){
-        memberRepository.findByEmail(new Email(memberDTO.email())).ifPresent(it->{
+    public RequestMember createMember(RequestMember memberDTO, MultipartFile profileImage) {
+        memberRepository.findByEmail(new Email(memberDTO.email())).ifPresent(it -> {
             throw new ApplicationException(ErrorCode.DUPLICATED_USER_NAME);
         });
         ResultFileStore resultFileStore = null;
@@ -68,7 +66,7 @@ public class MemberServiceImpl {
                 .height(memberDTO.height())
                 .activityLevel(memberDTO.activityLevel())
                 .nickname(memberDTO.nickname())
-                .profileImage(resultFileStore.folderPath() +"/"+resultFileStore.storeFileName())
+                .profileImage(resultFileStore.folderPath() + "/" + resultFileStore.storeFileName())
                 .birthday(memberDTO.birthday())
                 .tdeeCalculation(memberDTO.tdeeCalculation())
                 .build();
@@ -79,18 +77,17 @@ public class MemberServiceImpl {
 
         memberRepository.save(member);
         return memberDTO;
-
     }
 
 
     @Transactional
     public String updateMember(RequestUpdate updateMember) {
-        if(updateMember.memberId() == null || updateMember.currentWeight() == null || updateMember.targetWeight() == null
+        if (updateMember.memberId() == null || updateMember.currentWeight() == null || updateMember.targetWeight() == null
                 || updateMember.weightId() == null || updateMember.activityLevel() == null
-                || updateMember.height() == null || updateMember.nickname() == null || updateMember.profileImage() == null )
-        {
+                || updateMember.height() == null || updateMember.nickname() == null || updateMember.profileImage() == null) {
             throw new IllegalArgumentException(String.valueOf(ErrorCode.UPDATEMEMBER_EMPTY_COLUMN_ERROR));
-        };
+        }
+        ;
         MemberEntity member = memberRepository.findById(updateMember.memberId()).get();
         WeightEntity weight = weightRepository.findById(updateMember.weightId()).get();
         member.updateMember(updateMember);
@@ -99,7 +96,7 @@ public class MemberServiceImpl {
     }
 
 
-      public ResponseAuth login(RequestLogin login) {
+    public ResponseAuth login(RequestLogin login) {
         log.info("================= 로긴 서비스 단");
         log.info(login.email());
         MemberEntity entity = memberRepository.findByEmail(new Email(login.email()))
@@ -107,12 +104,12 @@ public class MemberServiceImpl {
         if (!encoder.matches(login.password(), entity.getPassword())) {
             throw new ApplicationException(ErrorCode.INVALID_PASSWORD);
         }
-          String accessToken = jwtTokenUtils.createAccessToken(login.email(), "USER");
-          String refreshToken = jwtTokenUtils.createRefreshToken(login.email(), "USER");
-          saveToken(refreshToken,login.email());
-          Member member = Member.fromEntity(entity);
+        String accessToken = jwtTokenUtils.createAccessToken(login.email(), "USER");
+        String refreshToken = jwtTokenUtils.createRefreshToken(login.email(), "USER");
+        saveToken(refreshToken, login.email());
+        Member member = Member.fromEntity(entity);
 
-        return  ResponseAuth.builder()
+        return ResponseAuth.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .member(member)
@@ -124,8 +121,9 @@ public class MemberServiceImpl {
         refreshTokenRepository.logout(email);
         return "로그아웃 완료";
     }
-    private void saveToken(String refreshToken,String email) {
-        refreshTokenRepository.save(refreshToken,email);
+
+    private void saveToken(String refreshToken, String email) {
+        refreshTokenRepository.save(refreshToken, email);
     }
 
     public boolean existsRefreshToken(String refreshToken) {
@@ -143,5 +141,18 @@ public class MemberServiceImpl {
         GetMember getMemberDTO = GetMember.create(member);
 
         return getMemberDTO;
+    }
+
+    public RequestWeight createWeight(Long memberId, RequestWeight weightDTO) {
+        MemberEntity member = memberRepository.findById(memberId).orElseThrow(() -> {
+            return new ApplicationException(ErrorCode.USER_NOT_FOUND);
+        });
+        WeightEntity weight = WeightEntity.builder()
+                .member(member)
+                .currentWeight(weightDTO.currentWeight())
+                .targetWeight(weightDTO.targetWeight())
+                .build();
+        weightRepository.save(weight);
+        return weightDTO;
     }
 }
