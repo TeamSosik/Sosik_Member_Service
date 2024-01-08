@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
     DUPLICATED_USER_NAME(HttpStatus.CONFLICT,"이미 사용중인 회원입니다!"),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND,"유저를 찾지 못했습니다."),
+    WEIGHT_NOT_FOUND(HttpStatus.NOT_FOUND,"몸무게를 찾지 못했습니다."),
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED,"유효하지 않는 패스워드입니다"),
 
     //token

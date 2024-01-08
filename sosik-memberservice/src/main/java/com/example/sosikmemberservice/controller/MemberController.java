@@ -57,9 +57,12 @@ public class MemberController {
         log.info(memberService.logout(request));
         return new ResponseEntity<>("정상적으로 로그아웃했습니다.",HttpStatus.OK);
     }
+
     @PatchMapping("/update")
-    public Result<Void> updateMember(@RequestBody @Valid final RequestUpdate updateMember){
-        memberService.updateMember(updateMember);
+    public Result<Void> updateMember(@AuthenticationPrincipal Member member,
+                                     @RequestPart @Valid final RequestUpdate updateMember,
+    @RequestPart(required = false)  MultipartFile profileImage){
+        memberService.updateMember(member.getMemberId(),updateMember,profileImage);
         return Result.success();
     }
     @PostMapping("/findpw" )
