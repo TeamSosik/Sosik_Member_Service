@@ -60,8 +60,11 @@ public class MemberController {
     }
 
     @PatchMapping("/update")
-    public Result<Void> updateMember(@RequestBody @Valid final RequestUpdate updateMember) {
-        memberService.updateMember(updateMember);
+
+    public Result<Void> updateMember(@AuthenticationPrincipal Member member,
+                                     @RequestPart @Valid final RequestUpdate updateMember,
+    @RequestPart(required = false)  MultipartFile profileImage){
+        memberService.updateMember(member.getMemberId(),updateMember,profileImage);
         return Result.success();
     }
 

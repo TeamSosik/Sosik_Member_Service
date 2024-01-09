@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Optional;
 
 
 @Service
@@ -81,17 +82,22 @@ public class MemberServiceImpl {
 
 
     @Transactional
-    public String updateMember(RequestUpdate updateMember) {
-        if (updateMember.memberId() == null || updateMember.currentWeight() == null || updateMember.targetWeight() == null
-                || updateMember.weightId() == null || updateMember.activityLevel() == null
-                || updateMember.height() == null || updateMember.nickname() == null || updateMember.profileImage() == null) {
-            throw new IllegalArgumentException(String.valueOf(ErrorCode.UPDATEMEMBER_EMPTY_COLUMN_ERROR));
+    public String updateMember(Long memberId,RequestUpdate updateMember,MultipartFile profileImage) {
+        MemberEntity member = memberRepository.findById(memberId).orElseThrow(
+                () -> new ApplicationException(ErrorCode.USER_NOT_FOUND)
+        );
+        ResultFileStore resultFileStore = null;
+        try {
+            resultFileStore = filestore.storeProfileFile(profileImage);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        ;
-        MemberEntity member = memberRepository.findById(updateMember.memberId()).get();
-        WeightEntity weight = weightRepository.findById(updateMember.weightId()).get();
-        member.updateMember(updateMember);
+        member.updateProfileUrl(resultFileStore);
+
+        WeightEntity weight = member.getWeight().get(member.getWeight().size()-1);
+
         weight.updateWeight(updateMember);
+        member.updateMember(updateMember);
         return "ok";
     }
 

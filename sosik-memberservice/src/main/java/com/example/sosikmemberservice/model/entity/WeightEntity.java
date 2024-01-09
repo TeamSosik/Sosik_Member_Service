@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "weight")
-public class WeightEntity {
+public class WeightEntity extends AuditingFields{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -52,8 +52,8 @@ public class WeightEntity {
 
 
     public void updateWeight(RequestUpdate updateMember){
-        this.targetWeight=updateMember.targetWeight();
-        this.currentWeight=updateMember.currentWeight();
+        this.targetWeight = updateMember.targetWeight();
+        this.currentWeight = updateMember.currentWeight();
     }
 
     // 연관관계 메서드

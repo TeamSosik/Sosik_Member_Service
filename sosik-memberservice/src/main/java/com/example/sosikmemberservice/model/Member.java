@@ -51,10 +51,12 @@ public class Member implements UserDetails {
     private  Long memberId;
     private String email;
     private String password;
+    private String gender;
     private MemberRole memberRole;
     private String birthday;
     private String profileImage;
     private String nickname;
+
 
     public static Member fromEntity(MemberEntity entity){
 
@@ -62,6 +64,7 @@ public class Member implements UserDetails {
                 entity.getMemberId(),
                 entity.getEmail().getValue(),
                 entity.getPassword(),
+                entity.getGender(),
                 entity.getRole(),
                 entity.getBirthday(),
                 entity.getProfileImage().getValue(),
