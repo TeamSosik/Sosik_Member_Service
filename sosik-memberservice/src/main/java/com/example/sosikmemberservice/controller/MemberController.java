@@ -41,39 +41,43 @@ public class MemberController {
 
     @PostMapping("/sign-up")
     public Result<Void> createMember(@RequestPart @Valid RequestMember member,
-                                     @RequestPart(required = false)  MultipartFile profileImage) {
+                                     @RequestPart(required = false) MultipartFile profileImage) {
 
-        memberService.createMember(member,profileImage);
+        memberService.createMember(member, profileImage);
         return Result.success();
     }
 
     @PostMapping("/login")
     public Result<ResponseAuth> login(@RequestBody @Valid final RequestLogin request) {
-        log.info(request.email()+" "+request.password());
+        log.info(request.email() + " " + request.password());
         return Result.success(memberService.login(request));
     }
+
     @PostMapping(value = "/logout")
     public ResponseEntity<String> logout(@RequestBody final RequestLogout request) {
         log.info(memberService.logout(request));
-        return new ResponseEntity<>("정상적으로 로그아웃했습니다.",HttpStatus.OK);
+        return new ResponseEntity<>("정상적으로 로그아웃했습니다.", HttpStatus.OK);
     }
 
     @PatchMapping("/update")
+
     public Result<Void> updateMember(@AuthenticationPrincipal Member member,
                                      @RequestPart @Valid final RequestUpdate updateMember,
     @RequestPart(required = false)  MultipartFile profileImage){
         memberService.updateMember(member.getMemberId(),updateMember,profileImage);
         return Result.success();
     }
-    @PostMapping("/findpw" )
-    public Result<Void> sendEmail(@RequestBody final RequestFindPw requestFindPw){
+
+    @PostMapping("/findpw")
+    public Result<Void> sendEmail(@RequestBody final RequestFindPw requestFindPw) {
         Mail dto = mailService.createMailAndChangePassword(requestFindPw.email());
         mailService.mailSend(dto);
 
         return Result.success();
     }
-    @PostMapping("/test" )
-    public Result<Void> test(@RequestBody final RequestLogin RequestLogin, @AuthenticationPrincipal Member user){
+
+    @PostMapping("/test")
+    public Result<Void> test(@RequestBody final RequestLogin RequestLogin, @AuthenticationPrincipal Member user) {
         log.info(user.getNickname());
         return Result.success();
     }
@@ -83,6 +87,12 @@ public class MemberController {
 
         GetMember result = memberService.getMember(user.getMemberId());
         return Result.success(result);
+    }
+
+    @PostMapping("/weight")
+    public Result<Void> createWeight(@RequestHeader Long memberId, RequestWeight requestWeight) {
+        memberService.createWeight(memberId, requestWeight);
+        return Result.success();
     }
 
 }

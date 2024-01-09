@@ -4,6 +4,7 @@ package com.example.sosikmemberservice.service;
 import com.example.sosikmemberservice.dto.request.RequestLogin;
 import com.example.sosikmemberservice.dto.request.RequestMember;
 import com.example.sosikmemberservice.dto.request.RequestUpdate;
+import com.example.sosikmemberservice.dto.request.RequestWeight;
 import com.example.sosikmemberservice.dto.response.GetMember;
 import com.example.sosikmemberservice.exception.ErrorCode;
 import com.example.sosikmemberservice.model.entity.MemberEntity;
@@ -35,11 +36,13 @@ import static org.mockito.Mockito.*;
 @DisplayName("비즈니스 로직 - 게시글")
 @ExtendWith(MockitoExtension.class)
 class MemberServiceImplTest {
-    private static final String PROFILE_IMAGE_URL ="image/url/ddd";
-    private static final MemberEntity testMember1= testMember1();
-    private static final MemberEntity testMember2= testMember2();
-    private static final RequestMember testMemberDto= testMemberDto();
+    private static final String PROFILE_IMAGE_URL = "image/url/ddd";
+    private static final MemberEntity testMember1 = testMember1();
+    private static final MemberEntity testMember2 = testMember2();
+    private static final RequestMember testMemberDto = testMemberDto();
 
+    private static final WeightEntity testWeightDto = testWeight();
+    private static final RequestWeight testWeightDTO = testWeightDTO();
 //    private static final WeightEntity testWeightDto = testWeight();
 
     @InjectMocks
@@ -52,23 +55,20 @@ class MemberServiceImplTest {
     private BCryptPasswordEncoder encoder;
 
     @BeforeEach
-    void beforEach(){
+    void beforEach() {
         System.out.println("테스트를 시작합니다.");
     }
 
 
-
-
     @DisplayName("회원가입시 가입에 성공한다.")
     @Test
-    void givenTestMemberWhenCreateMemberThenSuccess(){
+    void givenTestMemberWhenCreateMemberThenSuccess() {
 
         RequestMember testMemberDto = testMemberDto();
 
         given(memberRepository.save(any())).willReturn(any());
 
 //        assertThat(memberService.createMember(testMemberDto)).isEqualTo("ok");
-
 
 
     }
@@ -81,6 +81,7 @@ class MemberServiceImplTest {
 //        assertThatThrownBy(()-> memberService.createMember(testMemberDto())).isInstanceOf(ApplicationException.class);
 
     }
+
 
 //    @DisplayName("회원정보 수정에 성공한다.")
 //    @Test
@@ -134,8 +135,7 @@ class MemberServiceImplTest {
 //    }
 //
 
-
-    private static RequestMember testMemberDto(){
+    private static RequestMember testMemberDto() {
         return RequestMember.builder()
                 .email("made_power1@naver.com")
                 .password("12345678")
@@ -149,7 +149,7 @@ class MemberServiceImplTest {
                 .build();
     }
 
-    private static MemberEntity testMember1(){
+    private static MemberEntity testMember1() {
         return MemberEntity.builder()
                 .email("made_power1@naver.com")
                 .password("12345678")
@@ -164,7 +164,7 @@ class MemberServiceImplTest {
                 .build();
     }
 
-    private static MemberEntity testMember2(){
+    private static MemberEntity testMember2() {
         return MemberEntity.builder()
                 .email("made_power2@naver.com")
                 .password("12345678")
@@ -236,7 +236,7 @@ class MemberServiceImplTest {
 
     }
 
-    private static MemberEntity getTestMember3WithId(Long memberId){
+    private static MemberEntity getTestMember3WithId(Long memberId) {
         return MemberEntity.builder()
                 .memberId(memberId)
                 .email("made_power2@naver.com")
@@ -251,22 +251,19 @@ class MemberServiceImplTest {
                 .build();
     }
 
+    @DisplayName("체중 기록 시 정상적으로 작동된다")
+    @Test
+    void givenTestWeightWhenCreateIntakeThenSuccess() {
+        RequestWeight testWeightDTO = testWeightDTO();
+        given(memberRepository.findById(any())).willReturn(Optional.ofNullable(testMember1));
+        assertThat(memberService.createWeight(1L, testWeightDTO)).isEqualTo(testWeightDTO);
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    private static RequestWeight testWeightDTO() {
+        return RequestWeight.builder()
+                .member(testMember1())
+                .currentWeight(BigDecimal.valueOf(80))
+                .targetWeight(BigDecimal.valueOf(70))
+                .build();
+    }
 }
