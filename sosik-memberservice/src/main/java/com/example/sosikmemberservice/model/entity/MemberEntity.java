@@ -1,7 +1,7 @@
 package com.example.sosikmemberservice.model.entity;
 
 
-import com.example.sosikmemberservice.dto.request.RequestUpdate;
+import com.example.sosikmemberservice.dto.request.RequestUpdateMember;
 import com.example.sosikmemberservice.model.MemberRole;
 import com.example.sosikmemberservice.model.vo.Email;
 import com.example.sosikmemberservice.model.vo.Name;
@@ -10,7 +10,6 @@ import com.example.sosikmemberservice.util.file.ResultFileStore;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -20,7 +19,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "member")
-public class MemberEntity extends AuditingFields{
+public class MemberEntity extends AuditingFields {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,7 +37,7 @@ public class MemberEntity extends AuditingFields{
     @Column(precision = 4, scale = 1)
     private BigDecimal height;
 
-    @Column(name="role")
+    @Column(name = "role")
     @Enumerated(EnumType.STRING)
     private MemberRole role = MemberRole.USER;
 
@@ -60,43 +59,42 @@ public class MemberEntity extends AuditingFields{
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<WeightEntity> weight = new ArrayList<>();
 
-
-
     public MemberEntity(
-                        final Long memberId,
-                        final Email email,
-                        final Name name,
-                        final String password,
-                        final String gender,
-                        final BigDecimal height,
-                        final Integer activityLevel,
-                        final String nickname,
-                        final ProfileImageUrl profileImage,
-                        final String birthday,
-                        final Integer tdeeCalculation
-    ){
+            final Long memberId,
+            final Email email,
+            final Name name,
+            final String password,
+            final String gender,
+            final BigDecimal height,
+            final Integer activityLevel,
+            final String nickname,
+            final ProfileImageUrl profileImage,
+            final String birthday,
+            final Integer tdeeCalculation
+    ) {
         this.memberId = memberId;
         this.email = email;
         this.name = name;
-        this.password=password;
+        this.password = password;
         this.gender = gender;
         this.height = height;
         this.activityLevel = activityLevel;
         this.nickname = nickname;
         this.profileImage = profileImage;
         this.birthday = birthday;
-        this.tdeeCalculation =tdeeCalculation;
+        this.tdeeCalculation = tdeeCalculation;
 
     }
 
-    public void updateMember(RequestUpdate updateMember){
-        this.height=updateMember.height();
-        this.activityLevel=updateMember.activityLevel();
-        this.nickname=updateMember.nickname();
+    public void updateMember(RequestUpdateMember updateMember) {
+        this.height = updateMember.height();
+        this.activityLevel = updateMember.activityLevel();
+        this.nickname = updateMember.nickname();
         this.tdeeCalculation = updateMember.tdeeCalculation();
     }
-    public void updateProfileUrl(ResultFileStore resultFileStore){
-         this.profileImage = new ProfileImageUrl(resultFileStore.folderPath()+"/"+resultFileStore.storeFileName());
+
+    public void updateProfileUrl(ResultFileStore resultFileStore) {
+        this.profileImage = new ProfileImageUrl(resultFileStore.folderPath() + "/" + resultFileStore.storeFileName());
     }
 
     @Builder
@@ -112,8 +110,18 @@ public class MemberEntity extends AuditingFields{
             final String profileImage,
             final String birthday,
             final Integer tdeeCalculation
-    ){
-        this(memberId, new Email(email),new Name(name),password,gender,height,activityLevel,nickname,new ProfileImageUrl(profileImage),birthday,tdeeCalculation);
+    ) {
+        this(memberId,
+                new Email(email),
+                new Name(name),
+                password,
+                gender,
+                height,
+                activityLevel,
+                nickname,
+                new ProfileImageUrl(profileImage),
+                birthday,
+                tdeeCalculation);
     }
 
 }

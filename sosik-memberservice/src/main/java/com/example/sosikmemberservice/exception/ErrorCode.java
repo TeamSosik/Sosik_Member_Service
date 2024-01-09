@@ -7,23 +7,18 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 public enum ErrorCode {
-    DUPLICATED_USER_NAME(HttpStatus.CONFLICT,"이미 사용중인 회원입니다!"),
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND,"유저를 찾지 못했습니다."),
-    WEIGHT_NOT_FOUND(HttpStatus.NOT_FOUND,"몸무게를 찾지 못했습니다."),
-    INVALID_PASSWORD(HttpStatus.UNAUTHORIZED,"유효하지 않는 패스워드입니다"),
+    //user
+    INVALID_PERMISSION(HttpStatus.UNAUTHORIZED, "You are an unauthorized user."),
+    DUPLICATED_USER_NAME(HttpStatus.CONFLICT, "You are already a member!"),
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "user found."),
+    INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "Please check your ID or password"),
 
     //token
-    INVALID_TOKEN_ERROR(HttpStatus.UNAUTHORIZED,"토큰이 유효하지 않습니다."),
-    EXPIRED_TOKEN_ERROR(HttpStatus.UNAUTHORIZED,"만료된 토큰입니다."),
-    UNSUPPORTED_TOKEN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"지원하지 않는 토큰입니다."),
-    MALFORMED_TOKEN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"올바르지 않는 토큰입니다."),
+    EXPIRED_TOKEN_ERROR(HttpStatus.UNAUTHORIZED, "This token is expired."),
+    UNSUPPORTED_TOKEN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "This token is not supported."),
+    MALFORMED_TOKEN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Invalid token."),
 
-    INVALID_PERMISSION(HttpStatus.UNAUTHORIZED,"권한이 없는 사용자입니다."),
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"내부 서버의 오류입니다."),
-    NAME_LENGTH_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"이름의 길이가 너무 깁니다"),
-    NAME_BLANK_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"이름은 공백일 수 없습니다!"),
-    UPDATEMEMBER_EMPTY_COLUMN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"업데이트 객체에 null이 포함  됐습니다."),
-    EMAIL_VALIDATION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"이메일 형식을  확인해주세요!");
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "This is an error from the internal server.");
 
     private HttpStatus status;
     private String message;

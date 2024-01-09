@@ -1,21 +1,28 @@
 package com.example.sosikmemberservice.model;
 
 import com.example.sosikmemberservice.model.entity.MemberEntity;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
 import java.util.Collection;
 import java.util.List;
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-public class Member implements UserDetails {
+
+
+public record Member(
+        Long memberId,
+        String email,
+        String password,
+        String gender,
+        MemberRole memberRole,
+        String birthday,
+        String profileImage,
+        String nickname
+) implements UserDetails{
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(this.getMemberRole().toString()));
+        return List.of(new SimpleGrantedAuthority(this.memberRole.name()));
     }
 
     @Override
@@ -30,36 +37,25 @@ public class Member implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 
-    private  Long memberId;
-    private String email;
-    private String password;
-    private String gender;
-    private MemberRole memberRole;
-    private String birthday;
-    private String profileImage;
-    private String nickname;
-
-
-    public static Member fromEntity(MemberEntity entity){
-
+    public static Member fromEntity(MemberEntity entity) {
         return new Member(
                 entity.getMemberId(),
                 entity.getEmail().getValue(),
@@ -72,3 +68,5 @@ public class Member implements UserDetails {
         );
     }
 }
+
+
