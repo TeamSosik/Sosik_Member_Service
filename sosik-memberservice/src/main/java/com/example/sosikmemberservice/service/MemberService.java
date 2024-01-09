@@ -1,33 +1,16 @@
-//package com.example.sosikmemberservice.service;
-//
-//
-//import com.example.sosikmemberservice.dto.request.RequestLogin;
-//import com.example.sosikmemberservice.dto.request.RequestMember;
-//<<<<<<< dev/minu/login
-//import com.example.sosikmemberservice.dto.response.ResponseAuth;
-//import org.springframework.security.core.userdetails.UserDetailsService;
-//
-//public interface MemberService extends UserDetailsService {
-//
-//    RequestMember createMember(RequestMember memberDTO);
-//
-//    ResponseAuth login(RequestLogin login);
-//
-//    String logout(String email);
-//=======
-//import com.example.sosikmemberservice.dto.request.UpdateMember;
-//import org.springframework.security.core.userdetails.UserDetails;
-//import org.springframework.security.core.userdetails.UsernameNotFoundException;
-//>>>>>>> main
-//
-//
-//<<<<<<< dev/minu/login
-//=======
-//    UserDetails loadUserByUsername(String email) throws UsernameNotFoundException;
-//
-//    String createMember(RequestMember memberDTO);
-//    String updateMember(UpdateMember updateMember);
-//
-//    String login(RequestLogin login);
-//>>>>>>> main
-//}
+package com.example.sosikmemberservice.service;
+
+import com.example.sosikmemberservice.dto.request.*;
+import com.example.sosikmemberservice.dto.response.GetMember;
+import com.example.sosikmemberservice.dto.response.ResponseAuth;
+import org.springframework.web.multipart.MultipartFile;
+
+public interface MemberService {
+    RequestSignup createMember(RequestSignup memberDTO, MultipartFile profileImage);
+    void updateMember(Long memberId,RequestUpdateMember updateMember,MultipartFile profileImage);
+    ResponseAuth login(RequestLogin login);
+    void logout(RequestLogout email);
+    boolean existsRefreshToken(String refreshToken);
+    GetMember getMember(Long memberId);
+    RequestWeight createWeight(Long memberId, RequestWeight weightDTO);
+}

@@ -2,26 +2,11 @@ package com.example.sosikmemberservice.dto.response;
 
 import com.example.sosikmemberservice.model.MemberRole;
 import com.example.sosikmemberservice.model.entity.MemberEntity;
-import com.example.sosikmemberservice.model.entity.WeightEntity;
-import com.example.sosikmemberservice.model.vo.Email;
-import com.example.sosikmemberservice.model.vo.Name;
-import com.example.sosikmemberservice.model.vo.ProfileImageUrl;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,6 +25,7 @@ public class GetMember {
     private String profileImage;
     private String birthday;
     private Integer tdeeCalculation;
+
     @Setter
     private List<GetWeight> weightList;
 
@@ -60,7 +46,6 @@ public class GetMember {
     }
 
     public static GetMember create(MemberEntity member) {
-
         GetMember getMemberDTO = GetMember.builder()
                 .memberId(member.getMemberId())
                 .email(member.getEmail().getValue())
@@ -74,15 +59,12 @@ public class GetMember {
                 .birthday(member.getBirthday())
                 .tdeeCalculation(member.getTdeeCalculation())
                 .build();
-
         List<GetWeight> getWeightList = member.getWeight().stream()
                 .map((weight) -> {
                     return GetWeight.create(weight);
                 })
                 .collect(Collectors.toList());
-
         getMemberDTO.setWeightList(getWeightList);
-
         return getMemberDTO;
 
     }

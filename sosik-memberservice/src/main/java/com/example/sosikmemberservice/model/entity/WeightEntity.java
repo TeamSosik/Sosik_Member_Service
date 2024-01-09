@@ -1,7 +1,6 @@
 package com.example.sosikmemberservice.model.entity;
 
-import com.example.sosikmemberservice.dto.request.RequestUpdate;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.example.sosikmemberservice.dto.request.RequestUpdateMember;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -14,7 +13,7 @@ import java.math.BigDecimal;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "weight")
-public class WeightEntity extends AuditingFields{
+public class WeightEntity extends AuditingFields {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,9 +34,9 @@ public class WeightEntity extends AuditingFields{
             final MemberEntity member,
             final BigDecimal currentWeight,
             final BigDecimal targetWeight
-    ){
+    ) {
         this.id = id;
-        this.member= member;
+        this.member = member;
         this.currentWeight = currentWeight;
         this.targetWeight = targetWeight;
     }
@@ -50,8 +49,7 @@ public class WeightEntity extends AuditingFields{
                 .build();
     }
 
-
-    public void updateWeight(RequestUpdate updateMember){
+    public void updateWeight(RequestUpdateMember updateMember) {
         this.targetWeight = updateMember.targetWeight();
         this.currentWeight = updateMember.currentWeight();
     }
