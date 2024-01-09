@@ -10,9 +10,13 @@ import com.example.sosikmemberservice.service.MailService;
 import com.example.sosikmemberservice.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.net.MalformedURLException;
 
 @RestController
 @RequiredArgsConstructor
@@ -65,6 +69,14 @@ public class MemberController {
     public Result<Void> createWeight(@RequestHeader Long memberId, RequestWeight requestWeight) {
         memberService.createWeight(memberId, requestWeight);
         return Result.success();
+    }
+
+    //프로필사진 불러오기
+    @GetMapping("/images/{memberId}")
+    public Resource showImage(@PathVariable Long memberId) throws MalformedURLException {
+        GetMember result = memberService.getMember(memberId);
+        String imageUrl = result.getProfileImage();
+        return new UrlResource("file:" + imageUrl);
     }
 
 }
