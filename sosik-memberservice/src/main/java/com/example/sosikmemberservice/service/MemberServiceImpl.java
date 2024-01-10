@@ -149,8 +149,6 @@ public class MemberServiceImpl implements MemberService {
         weightRepository.save(weight);
         return weightDTO;
     }
-
-
 }
 
 
