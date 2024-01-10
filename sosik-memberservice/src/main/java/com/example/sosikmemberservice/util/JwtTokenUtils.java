@@ -49,17 +49,18 @@ public class JwtTokenUtils {
         this.memberRepository = memberRepository;
     }
 
-    public String createAccessToken(String email, String role) {
-        return this.createToken(email, role, accessTokenValidityInSeconds);
+    public String createAccessToken(String email, String role,Long memberId) {
+        return this.createToken(email, role, accessTokenValidityInSeconds,memberId);
     }
 
-    public String createRefreshToken(String email, String role) {
-        return this.createToken(email, role, refreshTokenValidityInSeconds);
+    public String createRefreshToken(String email, String role, Long memberId) {
+        return this.createToken(email, role, refreshTokenValidityInSeconds, memberId);
     }
 
-    public String createToken(String email, String roles, long tokenValid) {
+    public String createToken(String email, String roles, long tokenValid,Long memberId) {
         Claims claims = Jwts.claims().setSubject(email);
         claims.put("auth", roles);
+        claims.put("memberId",memberId);
 
         Date date = new Date();
         return Jwts.builder()
