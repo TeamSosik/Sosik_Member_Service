@@ -47,8 +47,8 @@ public class MemberController {
     @PatchMapping("/v1/")
     public Result<Void> updateMember(@RequestBody @Valid final RequestUpdateMember updateMember,
                                      @RequestPart(required = false) MultipartFile profileImage,
-                                     @AuthenticationPrincipal Member user) {
-        memberService.updateMember(user.memberId(), updateMember, profileImage);
+                                     @RequestHeader Long memberId) {
+        memberService.updateMember(memberId, updateMember, profileImage);
         return Result.success();
     }
 
@@ -60,19 +60,19 @@ public class MemberController {
     }
 
     @GetMapping("/v1/detail")
-    public Result<GetMember> getMember(@AuthenticationPrincipal Member user) {
-        GetMember result = memberService.getMember(user.memberId());
+    public Result<GetMember> getMember(@RequestHeader Long memberId) {
+        GetMember result = memberService.getMember(memberId);
         return Result.success(result);
     }
 
-    @PostMapping("/weight")
+    @PostMapping("/v1/weight")
     public Result<Void> createWeight(@RequestHeader Long memberId, RequestWeight requestWeight) {
         memberService.createWeight(memberId, requestWeight);
         return Result.success();
     }
 
     //프로필사진 불러오기
-    @GetMapping("/images/{memberId}")
+    @GetMapping("/v1/images/{memberId}")
     public Resource showImage(@PathVariable Long memberId) throws MalformedURLException {
         GetMember result = memberService.getMember(memberId);
         String imageUrl = result.getProfileImage();
