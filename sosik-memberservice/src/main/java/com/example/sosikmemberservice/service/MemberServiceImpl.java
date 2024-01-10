@@ -149,13 +149,6 @@ public class MemberServiceImpl implements MemberService {
         weightRepository.save(weight);
         return weightDTO;
     }
-
-    public void createMemberByOauth(String email, String profileImage, String nickname, String password
-                                    ,String refreshToken ){
-
-    }
-
-
 }
 
 
