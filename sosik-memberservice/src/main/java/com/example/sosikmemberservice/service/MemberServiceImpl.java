@@ -19,7 +19,6 @@ import com.example.sosikmemberservice.util.file.ResultFileStore;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -76,7 +75,7 @@ public class MemberServiceImpl implements MemberService {
         return memberDTO;
     }
 
-    public void updateMember(Long memberId, RequestUpdateMember updateMember, MultipartFile profileImage) {
+    public void updateMember(Long memberId,RequestUpdateMember updateMember,MultipartFile profileImage) {
         MemberEntity member = memberRepository.findById(memberId).orElseThrow(
                 () -> new ApplicationException(ErrorCode.USER_NOT_FOUND)
         );
@@ -101,8 +100,8 @@ public class MemberServiceImpl implements MemberService {
         if (!encoder.matches(login.password(), entity.getPassword())) {
             throw new ApplicationException(ErrorCode.INVALID_PASSWORD);
         }
-        String accessToken = jwtTokenUtils.createAccessToken(login.email(), "USER");
-        String refreshToken = jwtTokenUtils.createRefreshToken(login.email(), "USER");
+        String accessToken = jwtTokenUtils.createAccessToken(login.email(), "USER",entity.getMemberId());
+        String refreshToken = jwtTokenUtils.createRefreshToken(login.email(), "USER", entity.getMemberId());
         saveToken(refreshToken, login.email());
         Member member = Member.fromEntity(entity);
 
