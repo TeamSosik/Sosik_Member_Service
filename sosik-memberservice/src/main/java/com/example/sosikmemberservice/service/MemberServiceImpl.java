@@ -4,8 +4,6 @@ package com.example.sosikmemberservice.service;
 import com.example.sosikmemberservice.dto.request.*;
 import com.example.sosikmemberservice.dto.response.GetMember;
 import com.example.sosikmemberservice.dto.response.ResponseAuth;
-import com.example.sosikmemberservice.dto.response.oauth.kakao.ResponseKakao;
-import com.example.sosikmemberservice.dto.response.oauth.kakao.ResponseKakaoUserInfo;
 import com.example.sosikmemberservice.exception.ApplicationException;
 import com.example.sosikmemberservice.exception.ErrorCode;
 import com.example.sosikmemberservice.model.Member;
