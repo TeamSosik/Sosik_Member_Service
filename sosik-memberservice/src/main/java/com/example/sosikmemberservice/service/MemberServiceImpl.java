@@ -149,6 +149,13 @@ public class MemberServiceImpl implements MemberService {
         weightRepository.save(weight);
         return weightDTO;
     }
+
+    @Override
+    public boolean checkEmail(String email) {
+        Email checkEmail = new Email(email);
+        Boolean checkResult = memberRepository.existsByEmail(checkEmail);
+        return checkResult;
+    }
 }
 
 

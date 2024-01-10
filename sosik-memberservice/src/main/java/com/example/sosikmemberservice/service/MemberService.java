@@ -17,5 +17,6 @@ public interface MemberService {
     boolean existsRefreshToken(String refreshToken);
     GetMember getMember(Long memberId);
     RequestWeight createWeight(Long memberId, RequestWeight weightDTO);
+    boolean checkEmail(String email);
 
 }
