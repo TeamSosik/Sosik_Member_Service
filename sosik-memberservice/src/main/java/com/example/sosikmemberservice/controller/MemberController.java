@@ -77,4 +77,9 @@ public class MemberController {
         return new UrlResource("file:" + imageUrl);
     }
 
+    @PostMapping("/v1/checkEmail/{email}")
+    public boolean checkEmail(@PathVariable("email") String email) {
+        Boolean checkResult =  memberService.checkEmail(email);
+        return checkResult;
+    }
 }
