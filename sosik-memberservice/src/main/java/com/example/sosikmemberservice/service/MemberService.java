@@ -15,11 +15,7 @@ public interface MemberService {
     void logout(RequestLogout email);
     void saveToken(String refreshToken,String email);
     boolean existsRefreshToken(String refreshToken);
-
     GetMember getMember(Long memberId);
-    void createMemberByOauth(String email, String profileImage, String nickname, String password
-            ,String refreshToken );
-
     RequestWeight createWeight(Long memberId, RequestWeight weightDTO);
 
 }
