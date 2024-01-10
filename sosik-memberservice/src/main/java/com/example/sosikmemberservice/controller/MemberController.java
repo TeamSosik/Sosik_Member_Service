@@ -5,14 +5,12 @@ import com.example.sosikmemberservice.dto.request.*;
 import com.example.sosikmemberservice.dto.response.GetMember;
 import com.example.sosikmemberservice.dto.response.ResponseAuth;
 import com.example.sosikmemberservice.model.Mail;
-import com.example.sosikmemberservice.model.Member;
 import com.example.sosikmemberservice.service.MailService;
 import com.example.sosikmemberservice.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 

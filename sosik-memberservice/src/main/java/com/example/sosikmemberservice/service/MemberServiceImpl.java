@@ -150,6 +150,11 @@ public class MemberServiceImpl implements MemberService {
         return weightDTO;
     }
 
+    public void createMemberByOauth(String email, String profileImage, String nickname, String password
+                                    ,String refreshToken ){
+
+    }
+
 
 }
 

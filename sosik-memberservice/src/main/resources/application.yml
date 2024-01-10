@@ -6,6 +6,27 @@ file:
 
 
 spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-id: ${REST_API_KEY} # 앱키 -> REST API 키
+            client-secret: ${CLIENT_SECRET} # 카카오 로그인 -> 보안 -> Client Secret 코드
+            authorization-grant-type: authorization_code
+            redirect-uri: "http://localhost:3000/redirection" # yml 파일에서 {} 가 spring 특수문자로 인식되게 하기 위해 " " 사용
+            client-authentication-method: POST
+            scope:
+              - profile
+              - account_email
+
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize # "인가 코드 받기" 항목
+            token-uri: https://kauth.kakao.com/oauth/token # "토큰 받기" 항목
+            user-info-uri: https://kapi.kakao.com/v2/user/me # "사용자 정보 가져오기" 항목
+            user-name-attribute: id # 식별자 . 카카오의 경우 "id" 사용
+
   servlet:
     multipart:
       max-file-size: 20MB
@@ -28,16 +49,16 @@ spring:
       settings:
         web-allow-others: true
   datasource:
-    # h2
-#    driver-class-name: org.h2.Driver
-#    url: jdbc:h2:mem:testdb
-#    username: sa
+#     h2
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb
+    username: sa
 
     #mysql
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:10000/sosik?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
-    username: test1
-    password: ${mysql_password}
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://localhost:10000/sosik?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
+#    username: test1
+#    password: ${mysql_password}
 
   jpa:
     show-sql: true
