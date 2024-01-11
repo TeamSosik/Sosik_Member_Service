@@ -15,9 +15,6 @@ public record RequestUpdateMember(@NotNull
                                   @NotNull
                                   Integer activityLevel,
                                   @NotNull
-                                  Integer tdeeCalculation,
-                                  @NotBlank
-                                  String nickname
-
+                                  Integer tdeeCalculation
 ) {
 }
