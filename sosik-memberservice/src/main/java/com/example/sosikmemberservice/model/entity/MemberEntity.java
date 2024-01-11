@@ -89,7 +89,6 @@ public class MemberEntity extends AuditingFields {
     public void updateMember(RequestUpdateMember updateMember) {
         this.height = updateMember.height();
         this.activityLevel = updateMember.activityLevel();
-        this.nickname = updateMember.nickname();
         this.tdeeCalculation = updateMember.tdeeCalculation();
     }
 
