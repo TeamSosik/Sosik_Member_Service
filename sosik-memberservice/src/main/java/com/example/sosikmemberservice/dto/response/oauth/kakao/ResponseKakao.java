@@ -4,5 +4,8 @@ import lombok.Builder;
 
 @Builder
 public record ResponseKakao(ResponseKakaoToken token,
-                            ResponseKakaoUserInfo info) {
+                            ResponseKakaoUserInfo info,
+                            Boolean isFirst,
+                            Boolean isEnrolled,
+                            Long memberId) {
 }

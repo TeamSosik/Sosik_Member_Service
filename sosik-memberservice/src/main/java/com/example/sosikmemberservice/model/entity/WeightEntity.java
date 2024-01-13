@@ -54,6 +54,12 @@ public class WeightEntity extends AuditingFields {
         this.currentWeight = updateMember.currentWeight();
     }
 
+
+    public void updateWeightForOAuth(BigDecimal currentWeight, BigDecimal targetWeight) {
+        this.targetWeight = currentWeight;
+        this.currentWeight = targetWeight;
+    }
+
     // 연관관계 메서드
     public void addMember(MemberEntity member) {
 
