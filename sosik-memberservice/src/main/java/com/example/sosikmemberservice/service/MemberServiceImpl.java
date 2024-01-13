@@ -39,20 +39,12 @@ public class MemberServiceImpl implements MemberService {
     private final FileUtils filestore;
 
     public MemberEntity findMember(String email) {
-        return memberRepository.findByEmail(new Email(email))
-                .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
+        return getMemberEntity(email,new ApplicationException(ErrorCode.USER_NOT_FOUND));
     }
 
     public RequestSignup createMember(RequestSignup memberDTO, MultipartFile profileImage) {
-        memberRepository.findByEmail(new Email(memberDTO.email())).ifPresent(it -> {
-            throw new ApplicationException(ErrorCode.DUPLICATED_USER_NAME);
-        });
-        ResultFileStore resultFileStore = null;
-        try {
-            resultFileStore = filestore.storeProfileFile(profileImage);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        getMemberEntity(memberDTO.email(),new ApplicationException(ErrorCode.DUPLICATED_USER_NAME));
+        ResultFileStore resultFileStore = getResultFileStore(profileImage);
 
         MemberEntity member = MemberEntity.builder()
                 .name(memberDTO.name())
@@ -75,28 +67,25 @@ public class MemberServiceImpl implements MemberService {
         return memberDTO;
     }
 
+
+
     public void updateMember(Long memberId,RequestUpdateMember updateMember,MultipartFile profileImage) {
         MemberEntity member = memberRepository.findById(memberId).orElseThrow(
                 () -> new ApplicationException(ErrorCode.USER_NOT_FOUND)
         );
-        ResultFileStore resultFileStore = null;
-        try {
-            resultFileStore = filestore.storeProfileFile(profileImage);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        ResultFileStore resultFileStore = getResultFileStore(profileImage);
         member.updateProfileUrl(resultFileStore);
-
-        WeightEntity weight = member.getWeight().get(member.getWeight().size() - 1);
+        WeightEntity weight = member.getWeight().get(member.getWeight().size()-1);
 
         weight.updateWeight(updateMember);
         member.updateMember(updateMember);
     }
 
 
+
+
     public ResponseAuth login(RequestLogin login) {
-        MemberEntity entity = memberRepository.findByEmail(new Email(login.email()))
-                .orElseThrow(IllegalArgumentException::new);
+        MemberEntity entity = getMemberEntity(login.email(), new ApplicationException(ErrorCode.USER_NOT_FOUND));
         if (!encoder.matches(login.password(), entity.getPassword())) {
             throw new ApplicationException(ErrorCode.INVALID_PASSWORD);
         }
@@ -116,6 +105,12 @@ public class MemberServiceImpl implements MemberService {
         refreshTokenRepository.logout(email);
     }
 
+    @Override
+    public boolean checkEmail(String email) {
+        Email checkEmail = new Email(email);
+        return memberRepository.existsByEmail(checkEmail);
+    }
+
     public void saveToken(String refreshToken, String email) {
         refreshTokenRepository.save(refreshToken, email);
     }
@@ -130,11 +125,7 @@ public class MemberServiceImpl implements MemberService {
             return new ApplicationException(ErrorCode.USER_NOT_FOUND);
         });
 
-        // 조회 완료
-        // dto 생성하기
-        GetMember getMemberDTO = GetMember.create(member);
-
-        return getMemberDTO;
+        return GetMember.create(member);
     }
 
     public RequestWeight createWeight(Long memberId, RequestWeight weightDTO) {
@@ -150,12 +141,21 @@ public class MemberServiceImpl implements MemberService {
         return weightDTO;
     }
 
-    @Override
-    public boolean checkEmail(String email) {
-        Email checkEmail = new Email(email);
-        Boolean checkResult = memberRepository.existsByEmail(checkEmail);
-        return checkResult;
+    private ResultFileStore getResultFileStore(MultipartFile profileImage) {
+        ResultFileStore resultFileStore = null;
+        try {
+            resultFileStore = filestore.storeProfileFile(profileImage);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return resultFileStore;
     }
+
+    private MemberEntity getMemberEntity(String email,RuntimeException e) {
+        return memberRepository.findByEmail(new Email(email))
+                .orElseThrow(() -> e);
+    }
+
 }
 
 
