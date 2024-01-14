@@ -1,6 +1,7 @@
 package com.example.sosikmemberservice.model.entity;
 
 import com.example.sosikmemberservice.dto.request.RequestUpdateMember;
+import com.example.sosikmemberservice.dto.request.RequestUpdateOAuthMember;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -54,11 +55,15 @@ public class WeightEntity extends AuditingFields {
         this.currentWeight = updateMember.currentWeight();
     }
 
+
+    public void updateWeightForOAuth(RequestUpdateOAuthMember updateOAuthMember) {
+        this.targetWeight = updateOAuthMember.targetWeight();
+        this.currentWeight = updateOAuthMember.currentWeight();
+    }
+
     // 연관관계 메서드
     public void addMember(MemberEntity member) {
-
         this.member = member;
         member.getWeight().add(this);
-
     }
 }

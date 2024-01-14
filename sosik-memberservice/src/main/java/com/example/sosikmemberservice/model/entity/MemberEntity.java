@@ -2,6 +2,7 @@ package com.example.sosikmemberservice.model.entity;
 
 
 import com.example.sosikmemberservice.dto.request.RequestUpdateMember;
+import com.example.sosikmemberservice.dto.request.RequestUpdateOAuthMember;
 import com.example.sosikmemberservice.model.MemberRole;
 import com.example.sosikmemberservice.model.vo.Email;
 import com.example.sosikmemberservice.model.vo.Name;
@@ -89,6 +90,14 @@ public class MemberEntity extends AuditingFields {
     public void updateMember(RequestUpdateMember updateMember) {
         this.height = updateMember.height();
         this.activityLevel = updateMember.activityLevel();
+        this.tdeeCalculation = updateMember.tdeeCalculation();
+    }
+
+    public void updateOAuthMember(RequestUpdateOAuthMember updateMember) {
+        this.height = updateMember.height();
+        this.activityLevel = updateMember.activityLevel();
+        this.gender = updateMember.gender();
+        this.birthday = updateMember.birthday();
         this.tdeeCalculation = updateMember.tdeeCalculation();
     }
 

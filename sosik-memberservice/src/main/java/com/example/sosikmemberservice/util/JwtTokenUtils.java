@@ -67,7 +67,7 @@ public class JwtTokenUtils {
                 .setClaims(claims)
                 .setIssuedAt(date)
                 .setExpiration(new Date(date.getTime() + tokenValid))
-                .signWith(SignatureAlgorithm.HS256, createKey())
+                .signWith(createKey())
                 .compact();
     }
 

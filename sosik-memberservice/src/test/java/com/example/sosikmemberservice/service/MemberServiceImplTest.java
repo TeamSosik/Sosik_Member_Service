@@ -1,9 +1,8 @@
 package com.example.sosikmemberservice.service;
 
 
-import com.example.sosikmemberservice.dto.request.RequestLogin;
-import com.example.sosikmemberservice.dto.request.RequestMember;
-import com.example.sosikmemberservice.dto.request.RequestUpdate;
+import com.example.sosikmemberservice.dto.request.RequestSignup;
+import com.example.sosikmemberservice.dto.request.RequestUpdateMember;
 import com.example.sosikmemberservice.dto.request.RequestWeight;
 import com.example.sosikmemberservice.dto.response.GetMember;
 import com.example.sosikmemberservice.exception.ErrorCode;
@@ -13,7 +12,6 @@ import com.example.sosikmemberservice.exception.ApplicationException;
 import com.example.sosikmemberservice.model.entity.WeightEntity;
 import com.example.sosikmemberservice.repository.MemberRepository;
 import com.example.sosikmemberservice.repository.WeightRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,10 +34,10 @@ import static org.mockito.Mockito.*;
 @DisplayName("비즈니스 로직 - 게시글")
 @ExtendWith(MockitoExtension.class)
 class MemberServiceImplTest {
-    private static final String PROFILE_IMAGE_URL = "image/url/ddd";
-    private static final MemberEntity testMember1 = testMember1();
-    private static final MemberEntity testMember2 = testMember2();
-    private static final RequestMember testMemberDto = testMemberDto();
+    private static final String PROFILE_IMAGE_URL ="image/url/ddd";
+    private static final MemberEntity testMember1= testMember1();
+    private static final MemberEntity testMember2= testMember2();
+    private static final RequestSignup testMemberDto= testMemberDto();
 
     private static final WeightEntity testWeightDto = testWeight();
     private static final RequestWeight testWeightDTO = testWeightDTO();
@@ -54,21 +52,17 @@ class MemberServiceImplTest {
     @Mock
     private BCryptPasswordEncoder encoder;
 
-    @BeforeEach
-    void beforEach() {
-        System.out.println("테스트를 시작합니다.");
-    }
 
 
     @DisplayName("회원가입시 가입에 성공한다.")
     @Test
     void givenTestMemberWhenCreateMemberThenSuccess() {
 
-        RequestMember testMemberDto = testMemberDto();
+        RequestSignup testMemberDto = testMemberDto();
 
         given(memberRepository.save(any())).willReturn(any());
 
-//        assertThat(memberService.createMember(testMemberDto)).isEqualTo("ok");
+        assertThat(memberService.createMember(testMemberDto,any())).isEqualTo("ok");
 
 
     }
@@ -78,65 +72,59 @@ class MemberServiceImplTest {
     void givenTestMemberWhenCreateMemberThenThrowDUPLICATED_USER_NAME() {
         given(memberRepository.findByEmail(any())).willReturn(Optional.of(testMember1()));
 
-//        assertThatThrownBy(()-> memberService.createMember(testMemberDto())).isInstanceOf(ApplicationException.class);
+        assertThatThrownBy(()-> memberService.createMember(testMemberDto(),any())).isInstanceOf(ApplicationException.class);
 
     }
 
+    @DisplayName("회원정보 수정에 성공한다.")
+    @Test
+    void givenTestMemberWhenUpdateMemberThenUpdateSuccess(){
+        RequestUpdateMember testUpdateSuccessDto = updateTest();
+        given(memberRepository.findById(any())).willReturn(Optional.of(testMember1));
+        given(weightRepository.findById(any())).willReturn(Optional.of(testWeightDto));
 
-//    @DisplayName("회원정보 수정에 성공한다.")
-//    @Test
-//    void givenTestMemberWhenUpdateMemberThenUpdateSuccess(){
-//        RequestUpdate testUpdateSuccessDto = updateTest();
-//        given(memberRepository.findById(testUpdateSuccessDto.memberId())).willReturn(Optional.of(testMember1));
-//        given(weightRepository.findById(testUpdateSuccessDto.weightId())).willReturn(Optional.of(testWeightDto));
-//        testMember1.updateMember(testUpdateSuccessDto);
-//        testWeightDto.updateWeight(testUpdateSuccessDto);
-//        assertThat(memberService.updateMember(testUpdateSuccessDto)).isEqualTo("ok");
-//
-//    }
-//    @DisplayName("회원정보 수정에 실패한다. - 객체에 null 값이 있음")
-//    @Test
-//    void givenTestMemberWhenUpdateMemberThrowUPDATEMEMBER_EMPTY_COLUMN_ERROR(){
-//        RequestUpdate updateTestMember = updateTest2(); //null값이 있는 객체
-//        assertThatThrownBy(()-> memberService.updateMember(updateTestMember)).isInstanceOf(IllegalArgumentException.class);
-//    }
-//
-//
-//    private static WeightEntity testWeight(){
-//        return WeightEntity.builder()
-//                .id(1L)
-//                .currentWeight(BigDecimal.valueOf(160))
-//                .targetWeight(BigDecimal.valueOf(160))
-//                .member(testMember1())
-//                .build();
-//    }
-//    private static RequestUpdate updateTest(){
-//        return RequestUpdate.builder()
-//                .memberId(1L)
-//                .weightId(1L)
-//                .currentWeight(BigDecimal.valueOf(200))
-//                .targetWeight(BigDecimal.valueOf(150))
-//                .height(BigDecimal.valueOf(175))
-//                .profileImage("c/trij/nrt")
-//                .nickname("Minutaurus")
-//                .activityLevel(1)
-//                .build();
-//    }
-//    private static RequestUpdate updateTest2(){ //현재 체중값이 null
-//        return RequestUpdate.builder()
-//                .memberId(1L)
-//                .weightId(1L)
-//                .targetWeight(BigDecimal.valueOf(150))
-//                .height(BigDecimal.valueOf(175))
-//                .profileImage("c/trij/nrt")
-//                .nickname("Minutaurus")
-//                .activityLevel(1)
-//                .build();
-//    }
-//
+        testMember1.updateMember(testUpdateSuccessDto);
+        testWeightDto.updateWeight(testUpdateSuccessDto);
 
-    private static RequestMember testMemberDto() {
-        return RequestMember.builder()
+    }
+    @DisplayName("회원정보 수정에 실패한다. - 객체에 null 값이 있음")
+    @Test
+    void givenTestMemberWhenUpdateMemberThrowUPDATEMEMBER_EMPTY_COLUMN_ERROR(){
+        RequestUpdateMember updateTestMember = updateTest2(); //null값이 있는 객체
+        assertThatThrownBy(()-> memberService.updateMember(any(),updateTestMember,any())).isInstanceOf(IllegalArgumentException.class);
+    }
+
+
+    private static WeightEntity testWeight(){
+        return WeightEntity.builder()
+                .id(1L)
+                .currentWeight(BigDecimal.valueOf(160))
+                .targetWeight(BigDecimal.valueOf(160))
+                .member(testMember1())
+                .build();
+    }
+    private static RequestUpdateMember updateTest(){
+        return RequestUpdateMember.builder()
+                .currentWeight(BigDecimal.valueOf(200))
+                .targetWeight(BigDecimal.valueOf(150))
+                .height(BigDecimal.valueOf(175))
+//                .nickname("Minutaurus")
+                .activityLevel(1)
+                .build();
+    }
+    private static RequestUpdateMember updateTest2(){ //현재 체중값이 null
+        return RequestUpdateMember.builder()
+                .targetWeight(BigDecimal.valueOf(150))
+                .height(BigDecimal.valueOf(175))
+//                .nickname("Minutaurus")
+                .activityLevel(1)
+                .build();
+    }
+
+
+
+    private static RequestSignup testMemberDto(){
+        return RequestSignup.builder()
                 .email("made_power1@naver.com")
                 .password("12345678")
                 .name("minu")
