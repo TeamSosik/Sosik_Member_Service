@@ -60,9 +60,7 @@ public class GetMember {
                 .tdeeCalculation(member.getTdeeCalculation())
                 .build();
         List<GetWeight> getWeightList = member.getWeight().stream()
-                .map((weight) -> {
-                    return GetWeight.create(weight);
-                })
+                .map(GetWeight::create)
                 .collect(Collectors.toList());
         getMemberDTO.setWeightList(getWeightList);
         return getMemberDTO;

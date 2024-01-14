@@ -6,6 +6,7 @@ import com.example.sosikmemberservice.dto.request.RequestUpdateOAuthMember;
 import com.example.sosikmemberservice.dto.response.oauth.kakao.ResponseKakao;
 import com.example.sosikmemberservice.dto.response.oauth.kakao.ResponseKakaoToken;
 import com.example.sosikmemberservice.dto.response.oauth.kakao.ResponseKakaoUserInfo;
+import com.example.sosikmemberservice.dto.response.oauth.kakao.ResponseMemberForOAuth;
 import com.example.sosikmemberservice.exception.ApplicationException;
 import com.example.sosikmemberservice.exception.ErrorCode;
 import com.example.sosikmemberservice.model.entity.MemberEntity;
@@ -13,17 +14,22 @@ import com.example.sosikmemberservice.model.entity.WeightEntity;
 import com.example.sosikmemberservice.model.vo.Email;
 import com.example.sosikmemberservice.repository.MemberRepository;
 import com.example.sosikmemberservice.repository.RefreshTokenRepository;
+import com.example.sosikmemberservice.util.JwtTokenUtils;
 import com.example.sosikmemberservice.util.file.FileUtils;
 import com.example.sosikmemberservice.util.file.ResultFileStore;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Optional;
 
 @RequiredArgsConstructor
+@Transactional
 @Service
 public class OAuthServiceImpl implements OAuthService {
     private final BCryptPasswordEncoder encoder;
@@ -32,6 +38,9 @@ public class OAuthServiceImpl implements OAuthService {
     private final KakaoTokenJsonData kakaoTokenJsonData;
     private final FileUtils filestore;
     private final KakaoUserInfo kakaoUserInfo;
+    private final JwtTokenUtils jwtTokenUtils;
+    @Value("${file.location}")
+    private String uploadPath;
 
     public ResponseKakao createMemberByOauth(String code) {
 
@@ -40,32 +49,44 @@ public class OAuthServiceImpl implements OAuthService {
 
         Optional<MemberEntity> existingMember = memberRepository.findByEmail(new Email(userInfo.kakaoAccount().email()));
         if (existingMember.isPresent()) {
-            saveRefreshToken(kakaoTokenResponse, userInfo);
+            String refreshToken = jwtTokenUtils.createRefreshToken(existingMember.get().getEmail().getValue(),
+                    "USER", existingMember.get().getMemberId());
+            saveRefreshToken(refreshToken, userInfo);
             return ResponseKakao.builder()
-                    .token(kakaoTokenResponse)
+                    .accessToken(jwtTokenUtils.createAccessToken(existingMember.get().getEmail().getValue(),
+                            "USER",existingMember.get().getMemberId()))
+                    .refreshToken(refreshToken)
                     .info(userInfo)
-                    .memberId(existingMember.get().getMemberId())
-                    .isFirst(false)
+                    .member(new ResponseMemberForOAuth(existingMember.get().getMemberId()))
+                    .isEnrolled(true)
                     .build();
         }
+
         MemberEntity member = MemberEntity.builder()
                 .name(userInfo.kakaoAccount().profile().nickname())
                 .password(encoder.encode(userInfo.kakaoAccount().email()))
                 .email(userInfo.kakaoAccount().email())
                 .nickname(userInfo.kakaoAccount().profile().nickname())
                 .birthday("2000-01-01")
-                .profileImage("Create-Image")
+                .profileImage(uploadPath)
                 .build();
 
-        saveRefreshToken(kakaoTokenResponse, userInfo);
+        String refreshToken = jwtTokenUtils.createRefreshToken(userInfo.kakaoAccount().email(),
+                "USER", member.getMemberId());
+
+        saveRefreshToken(refreshToken, userInfo);
         memberRepository.save(member);
 
+        WeightEntity weightEntity = WeightEntity.create(BigDecimal.valueOf(0), BigDecimal.valueOf(0));
+        weightEntity.addMember(member);
+
         return ResponseKakao.builder()
-                .token(kakaoTokenResponse)
+                .accessToken(jwtTokenUtils.createAccessToken(member.getEmail().getValue(),"USER", member.getMemberId()))
+                .refreshToken(refreshToken)
                 .info(userInfo)
-                .isFirst(true)
                 .isEnrolled(false)
-                .memberId(member.getMemberId())
+                .member(new ResponseMemberForOAuth(member.getMemberId()))
+                .weightEntity(weightEntity)
                 .build();
     }
 
@@ -79,14 +100,13 @@ public class OAuthServiceImpl implements OAuthService {
             throw new RuntimeException(e);
         }
         member.updateProfileUrl(resultFileStore);
-        WeightEntity weightEntity = WeightEntity.create(updateMember.currentWeight(), updateMember.targetWeight());
-        weightEntity.addMember(member);
-
         member.updateOAuthMember(updateMember);
+        WeightEntity weight = member.getWeight().get(member.getWeight().size()-1);
+        weight.updateWeightForOAuth(updateMember);
     }
 
-    private void saveRefreshToken(ResponseKakaoToken kakaoTokenResponse, ResponseKakaoUserInfo userInfo) {
-        refreshTokenRepository.save(kakaoTokenResponse.refreshToken(),
+    private void saveRefreshToken(String refreshToken, ResponseKakaoUserInfo userInfo) {
+        refreshTokenRepository.save(refreshToken,
                 userInfo.kakaoAccount().email() + "OAuth");
     }
 

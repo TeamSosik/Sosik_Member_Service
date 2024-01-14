@@ -39,11 +39,14 @@ public class MemberServiceImpl implements MemberService {
     private final FileUtils filestore;
 
     public MemberEntity findMember(String email) {
-        return getMemberEntity(email,new ApplicationException(ErrorCode.USER_NOT_FOUND));
+        return memberRepository.findByEmail(new Email(email)).get();
     }
 
     public RequestSignup createMember(RequestSignup memberDTO, MultipartFile profileImage) {
-        getMemberEntity(memberDTO.email(),new ApplicationException(ErrorCode.DUPLICATED_USER_NAME));
+        memberRepository.findByEmail(new Email(memberDTO.email())).ifPresent(member -> {
+            throw new ApplicationException(ErrorCode.DUPLICATED_USER_NAME);
+        });
+
         ResultFileStore resultFileStore = getResultFileStore(profileImage);
 
         MemberEntity member = MemberEntity.builder()
@@ -68,28 +71,27 @@ public class MemberServiceImpl implements MemberService {
     }
 
 
-
-    public void updateMember(Long memberId,RequestUpdateMember updateMember,MultipartFile profileImage) {
+    public void updateMember(Long memberId, RequestUpdateMember updateMember, MultipartFile profileImage) {
         MemberEntity member = memberRepository.findById(memberId).orElseThrow(
                 () -> new ApplicationException(ErrorCode.USER_NOT_FOUND)
         );
         ResultFileStore resultFileStore = getResultFileStore(profileImage);
         member.updateProfileUrl(resultFileStore);
-        WeightEntity weight = member.getWeight().get(member.getWeight().size()-1);
+        WeightEntity weight = member.getWeight().get(member.getWeight().size() - 1);
 
         weight.updateWeight(updateMember);
         member.updateMember(updateMember);
     }
 
 
-
-
     public ResponseAuth login(RequestLogin login) {
-        MemberEntity entity = getMemberEntity(login.email(), new ApplicationException(ErrorCode.USER_NOT_FOUND));
+        MemberEntity entity = memberRepository.findByEmail(new Email(login.email())).orElseThrow(
+                () -> new ApplicationException(ErrorCode.USER_NOT_FOUND)
+        );
         if (!encoder.matches(login.password(), entity.getPassword())) {
             throw new ApplicationException(ErrorCode.INVALID_PASSWORD);
         }
-        String accessToken = jwtTokenUtils.createAccessToken(login.email(), "USER",entity.getMemberId());
+        String accessToken = jwtTokenUtils.createAccessToken(login.email(), "USER", entity.getMemberId());
         String refreshToken = jwtTokenUtils.createRefreshToken(login.email(), "USER", entity.getMemberId());
         saveToken(refreshToken, login.email());
         Member member = Member.fromEntity(entity);
@@ -150,12 +152,6 @@ public class MemberServiceImpl implements MemberService {
         }
         return resultFileStore;
     }
-
-    private MemberEntity getMemberEntity(String email,RuntimeException e) {
-        return memberRepository.findByEmail(new Email(email))
-                .orElseThrow(() -> e);
-    }
-
 }
 
 

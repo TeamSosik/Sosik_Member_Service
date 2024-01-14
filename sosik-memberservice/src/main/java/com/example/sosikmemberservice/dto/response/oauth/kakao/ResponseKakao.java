@@ -1,11 +1,13 @@
 package com.example.sosikmemberservice.dto.response.oauth.kakao;
 
+import com.example.sosikmemberservice.model.entity.WeightEntity;
 import lombok.Builder;
 
 @Builder
-public record ResponseKakao(ResponseKakaoToken token,
+public record ResponseKakao(String accessToken,
+                            String refreshToken,
                             ResponseKakaoUserInfo info,
-                            Boolean isFirst,
                             Boolean isEnrolled,
-                            Long memberId) {
+                            WeightEntity weightEntity,
+                            ResponseMemberForOAuth member) {
 }
