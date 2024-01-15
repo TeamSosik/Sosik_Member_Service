@@ -28,31 +28,36 @@ public class WeightEntity extends AuditingFields {
 
     @Column(precision = 4, scale = 1)
     private BigDecimal targetWeight;
-
+    @Column(precision = 2)
+    private Integer managementWeek;
     @Builder
     public WeightEntity(
             final Long id,
             final MemberEntity member,
             final BigDecimal currentWeight,
-            final BigDecimal targetWeight
+            final BigDecimal targetWeight,
+            final Integer managementWeek
     ) {
         this.id = id;
         this.member = member;
         this.currentWeight = currentWeight;
         this.targetWeight = targetWeight;
+        this.managementWeek = managementWeek;
     }
 
-    public static WeightEntity create(BigDecimal currentWeight, BigDecimal targetWeight) {
+    public static WeightEntity create(BigDecimal currentWeight, BigDecimal targetWeight, Integer managementWeek) {
 
         return WeightEntity.builder()
                 .currentWeight(currentWeight)
                 .targetWeight(targetWeight)
+                .managementWeek(managementWeek)
                 .build();
     }
 
-    public void updateWeight(RequestUpdateMember updateMember) {
+    public void updateWeight(RequestUpdateMember updateMember,Integer managementWeek) {
         this.targetWeight = updateMember.targetWeight();
         this.currentWeight = updateMember.currentWeight();
+        this.managementWeek = managementWeek;
     }
 
 
