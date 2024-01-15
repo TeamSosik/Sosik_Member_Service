@@ -63,7 +63,8 @@ public class MemberServiceImpl implements MemberService {
                 .build();
 
         // 무게 추가
-        WeightEntity weight = WeightEntity.create(memberDTO.currentWeight(), memberDTO.targetWeight());
+        Integer calculationWeek = memberDTO.currentWeight().subtract(memberDTO.targetWeight()).abs().intValue()*2;
+        WeightEntity weight = WeightEntity.create(memberDTO.currentWeight(), memberDTO.targetWeight(),calculationWeek);
         weight.addMember(member);
 
         memberRepository.save(member);
@@ -78,8 +79,8 @@ public class MemberServiceImpl implements MemberService {
         ResultFileStore resultFileStore = getResultFileStore(profileImage);
         member.updateProfileUrl(resultFileStore);
         WeightEntity weight = member.getWeight().get(member.getWeight().size() - 1);
-
-        weight.updateWeight(updateMember);
+        Integer calculationWeek = updateMember.currentWeight().subtract(updateMember.targetWeight()).abs().intValue()*2;
+        weight.updateWeight(updateMember,calculationWeek);
         member.updateMember(updateMember);
     }
 
