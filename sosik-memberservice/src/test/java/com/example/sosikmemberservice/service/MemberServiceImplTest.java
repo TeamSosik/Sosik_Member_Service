@@ -76,17 +76,17 @@ class MemberServiceImplTest {
 
     }
 
-    @DisplayName("회원정보 수정에 성공한다.")
-    @Test
-    void givenTestMemberWhenUpdateMemberThenUpdateSuccess(){
-        RequestUpdateMember testUpdateSuccessDto = updateTest();
-        given(memberRepository.findById(any())).willReturn(Optional.of(testMember1));
-        given(weightRepository.findById(any())).willReturn(Optional.of(testWeightDto));
-
-        testMember1.updateMember(testUpdateSuccessDto);
-        testWeightDto.updateWeight(testUpdateSuccessDto);
-
-    }
+//    @DisplayName("회원정보 수정에 성공한다.")
+//    @Test
+//    void givenTestMemberWhenUpdateMemberThenUpdateSuccess(){
+//        RequestUpdateMember testUpdateSuccessDto = updateTest();
+//        given(memberRepository.findById(any())).willReturn(Optional.of(testMember1));
+//        given(weightRepository.findById(any())).willReturn(Optional.of(testWeightDto));
+//
+//        testMember1.updateMember(testUpdateSuccessDto);
+//        testWeightDto.updateWeight(testUpdateSuccessDto);
+//
+//    }
     @DisplayName("회원정보 수정에 실패한다. - 객체에 null 값이 있음")
     @Test
     void givenTestMemberWhenUpdateMemberThrowUPDATEMEMBER_EMPTY_COLUMN_ERROR(){

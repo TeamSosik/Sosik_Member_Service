@@ -76,8 +76,7 @@ public class OAuthServiceImpl implements OAuthService {
 
         saveRefreshToken(refreshToken, userInfo);
         memberRepository.save(member);
-
-        WeightEntity weightEntity = WeightEntity.create(BigDecimal.valueOf(0), BigDecimal.valueOf(0));
+        WeightEntity weightEntity = WeightEntity.create(BigDecimal.valueOf(0), BigDecimal.valueOf(0),Integer.valueOf(0));
         weightEntity.addMember(member);
 
         return ResponseKakao.builder()
@@ -101,8 +100,9 @@ public class OAuthServiceImpl implements OAuthService {
         }
         member.updateProfileUrl(resultFileStore);
         member.updateOAuthMember(updateMember);
+        Integer calculationWeek = updateMember.currentWeight().subtract(updateMember.targetWeight()).abs().intValue()*2;
         WeightEntity weight = member.getWeight().get(member.getWeight().size()-1);
-        weight.updateWeightForOAuth(updateMember);
+        weight.updateWeightForOAuth(updateMember,calculationWeek);
     }
 
     private void saveRefreshToken(String refreshToken, ResponseKakaoUserInfo userInfo) {
