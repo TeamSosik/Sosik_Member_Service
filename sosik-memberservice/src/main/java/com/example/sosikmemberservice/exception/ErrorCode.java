@@ -10,7 +10,7 @@ public enum ErrorCode {
     //user
     INVALID_PERMISSION(HttpStatus.UNAUTHORIZED, "You are an unauthorized user."),
     DUPLICATED_USER_NAME(HttpStatus.CONFLICT, "You are already a member!"),
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "user found."),
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "user not found."),
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "Please check your ID or password"),
 
     //token

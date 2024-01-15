@@ -4,21 +4,28 @@ server:
 file:
   location: /Users/Playdata/Desktop/Project/final-project/file
 
+
 spring:
   security:
     oauth2:
       client:
         registration:
           kakao:
-            client-id: ${REST_API_KEY} # 앱키 -> REST API 키
-            client-secret: ${CLIENT_SECRET} # 카카오 로그인 -> 보안 -> Client Secret 코드
+            client-id: ${REST_API_KEY_FOR_KAKAO} # 앱키 -> REST API 키
+            client-secret: ${CLIENT_SECRET_FOR_KAKAO} # 카카오 로그인 -> 보안 -> Client Secret 코드
             authorization-grant-type: authorization_code
-            redirect-uri: "http://localhost:3000/redirection" # yml 파일에서 {} 가 spring 특수문자로 인식되게 하기 위해 " " 사용
+            redirect-uri: "http://localhost:3000/redirectionKakao" # yml 파일에서 {} 가 spring 특수문자로 인식되게 하기 위해 " " 사용
             client-authentication-method: POST
             scope:
               - profile
               - account_email
-
+          naver:
+            client-id: ${REST_API_KEY_FOR_NAVER} # 앱키 -> REST API 키
+            client-secret: ${CLIENT_SECRET_FOR_NAVER}
+            scope: name, email
+            client-name: Naver
+            authorization-grant-type: authorization_code
+            redirect-uri: http://localhost:8080/login/oauth2/code/naver
         provider:
           kakao:
             authorization-uri: https://kauth.kakao.com/oauth/authorize # "인가 코드 받기" 항목
@@ -55,7 +62,7 @@ spring:
 
     #mysql
 #    driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: jdbc:mysql://localhost:10000/sosik?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
+#    url: jdbc:mysql://localhost:3306/sosik?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
 #    username: test1
 #    password: ${mysql_password}
 
