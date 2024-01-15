@@ -1,0 +1,99 @@
+server:
+  port: 9000
+
+file:
+  location: /Users/Playdata/Desktop/Project/final-project/file
+
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-id: ${REST_API_KEY_FOR_KAKAO} # 앱키 -> REST API 키
+            client-secret: ${CLIENT_SECRET_FOR_KAKAO} # 카카오 로그인 -> 보안 -> Client Secret 코드
+            authorization-grant-type: authorization_code
+            redirect-uri: "http://localhost:3000/redirectionKakao" # yml 파일에서 {} 가 spring 특수문자로 인식되게 하기 위해 " " 사용
+            client-authentication-method: POST
+            scope:
+              - profile
+              - account_email
+          naver:
+            client-id: ${REST_API_KEY_FOR_NAVER} # 앱키 -> REST API 키
+            client-secret: ${CLIENT_SECRET_FOR_NAVER}
+            scope: name, email
+            client-name: Naver
+            authorization-grant-type: authorization_code
+            redirect-uri: http://localhost:8080/login/oauth2/code/naver
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize # "인가 코드 받기" 항목
+            token-uri: https://kauth.kakao.com/oauth/token # "토큰 받기" 항목
+            user-info-uri: https://kapi.kakao.com/v2/user/me # "사용자 정보 가져오기" 항목
+            user-name-attribute: id # 식별자 . 카카오의 경우 "id" 사용
+
+  servlet:
+    multipart:
+      max-file-size: 20MB
+  mail:
+    host: smtp.naver.com
+    port: 465
+    username: ${MAIL_ID}
+    password: ${MAIL_PASSWORD}
+    protocol: smtps
+  cloud:
+    config:
+      discovery:
+        enabled: true
+  application:
+    name: member-service
+  h2:
+    console:
+      path: /h2-console
+      enabled: true
+      settings:
+        web-allow-others: true
+  datasource:
+#     h2
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb
+    username: sa
+
+    #mysql
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://localhost:3306/sosik?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
+#    username: test1
+#    password: ${mysql_password}
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+    defer-datasource-initialization: true
+    generate-ddl: true
+  config:
+    import: "optional:configserver:"
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: test1234
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+jwt:
+  access-token-validity-in-seconds: 86400000
+  refresh-token-validity-in-seconds: 864000000
+  secret-key: rkGU45258GGhiolLO2465TFY5345kGU45258GGhiolLO2465TFY5345KJHVJGCTHJGBGHCVGFrgtah2ty6ahdsryjms562n357
+
+
+

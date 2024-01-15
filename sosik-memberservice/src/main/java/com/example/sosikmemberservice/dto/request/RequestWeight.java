@@ -7,7 +7,6 @@ import java.math.BigDecimal;
 
 @Builder
 public record RequestWeight(
-        MemberEntity member,
         BigDecimal currentWeight,
         BigDecimal targetWeight
 ) {

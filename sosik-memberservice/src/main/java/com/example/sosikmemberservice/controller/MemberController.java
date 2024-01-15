@@ -9,6 +9,7 @@ import com.example.sosikmemberservice.service.MailService;
 import com.example.sosikmemberservice.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ import java.net.MalformedURLException;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/members")
-@CrossOrigin
+@Slf4j
 public class MemberController {
     private final MemberService memberService;
     private final MailService mailService;
@@ -45,8 +46,7 @@ public class MemberController {
     @PatchMapping("/v1/")
     public Result<Void> updateMember(@RequestHeader Long memberId,
                                      @RequestPart @Valid final RequestUpdateMember updateMember,
-                                     @RequestPart(required = false) MultipartFile profileImage)
-    {
+                                     @RequestPart(required = false) MultipartFile profileImage) {
         memberService.updateMember(memberId, updateMember, profileImage);
         return Result.success();
     }
@@ -65,7 +65,7 @@ public class MemberController {
     }
 
     @PostMapping("/v1/weight")
-    public Result<Void> createWeight(@RequestHeader Long memberId, RequestWeight requestWeight) {
+    public Result<Void> createWeight(@RequestHeader Long memberId, @RequestBody RequestWeight requestWeight) {
         memberService.createWeight(memberId, requestWeight);
         return Result.success();
     }
@@ -80,7 +80,7 @@ public class MemberController {
 
     @PostMapping("/v1/checkEmail/{email}")
     public boolean checkEmail(@PathVariable("email") String email) {
-        Boolean checkResult =  memberService.checkEmail(email);
+        Boolean checkResult = memberService.checkEmail(email);
         return checkResult;
     }
 }
