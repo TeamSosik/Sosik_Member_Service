@@ -4,6 +4,7 @@ import com.example.sosikmemberservice.common.Result;
 import com.example.sosikmemberservice.dto.request.*;
 import com.example.sosikmemberservice.dto.response.GetMember;
 import com.example.sosikmemberservice.dto.response.ResponseAuth;
+import com.example.sosikmemberservice.dto.response.ResponseGetManagementData;
 import com.example.sosikmemberservice.model.Mail;
 import com.example.sosikmemberservice.service.MailService;
 import com.example.sosikmemberservice.service.MemberService;
@@ -82,5 +83,10 @@ public class MemberController {
     public boolean checkEmail(@PathVariable("email") String email) {
         Boolean checkResult = memberService.checkEmail(email);
         return checkResult;
+    }
+    @GetMapping("/v1/managementData")
+    public Result<ResponseGetManagementData> getManagementData(@RequestHeader Long memberId){
+        ResponseGetManagementData responseGetManagementData = memberService.getManagementData(memberId);
+        return Result.success(responseGetManagementData);
     }
 }

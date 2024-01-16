@@ -4,6 +4,7 @@ package com.example.sosikmemberservice.service;
 import com.example.sosikmemberservice.dto.request.*;
 import com.example.sosikmemberservice.dto.response.GetMember;
 import com.example.sosikmemberservice.dto.response.ResponseAuth;
+import com.example.sosikmemberservice.dto.response.ResponseGetManagementData;
 import com.example.sosikmemberservice.exception.ApplicationException;
 import com.example.sosikmemberservice.exception.ErrorCode;
 import com.example.sosikmemberservice.model.Member;
@@ -154,6 +155,18 @@ public class MemberServiceImpl implements MemberService {
             throw new RuntimeException(e);
         }
         return resultFileStore;
+    }
+    public ResponseGetManagementData getManagementData(Long memberId){
+        MemberEntity memberEntity = memberRepository.findById(memberId).orElseThrow(
+                () -> new ApplicationException(ErrorCode.USER_NOT_FOUND)
+        );
+        ResponseGetManagementData responseGetManagementData = ResponseGetManagementData.builder()
+                .tdeeCalculation(memberEntity.getTdeeCalculation())
+                .currentWeight(memberEntity.getWeight().get(memberEntity.getWeight().size() - 1).getCurrentWeight())
+                .targetWeight(memberEntity.getWeight().get(memberEntity.getWeight().size() - 1).getTargetWeight())
+                .managementWeek(memberEntity.getWeight().get(memberEntity.getWeight().size() - 1).getManagementWeek())
+                .build();
+        return responseGetManagementData;
     }
 }
 
