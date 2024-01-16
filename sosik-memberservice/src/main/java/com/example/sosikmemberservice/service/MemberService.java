@@ -20,5 +20,6 @@ public interface MemberService {
     RequestWeight createWeight(Long memberId, RequestWeight weightDTO);
     boolean checkEmail(String email);
     ResponseGetManagementData getManagementData(Long memberId);
+    boolean checkWeightTodayRecode(Long memberId);
 
 }
