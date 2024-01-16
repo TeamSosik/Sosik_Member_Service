@@ -17,18 +17,21 @@ import com.example.sosikmemberservice.repository.WeightRepository;
 import com.example.sosikmemberservice.util.JwtTokenUtils;
 import com.example.sosikmemberservice.util.file.FileUtils;
 import com.example.sosikmemberservice.util.file.ResultFileStore;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 
-@Transactional
+@Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
 @CrossOrigin
@@ -74,7 +77,7 @@ public class MemberServiceImpl implements MemberService {
         return memberDTO;
     }
 
-
+    @Transactional
     public void updateMember(Long memberId, RequestUpdateMember updateMember, MultipartFile profileImage) {
         MemberEntity member = memberRepository.findById(memberId).orElseThrow(
                 () -> new ApplicationException(ErrorCode.USER_NOT_FOUND)
@@ -167,6 +170,24 @@ public class MemberServiceImpl implements MemberService {
                 .managementWeek(memberEntity.getWeight().get(memberEntity.getWeight().size() - 1).getManagementWeek())
                 .build();
         return responseGetManagementData;
+    }
+    @Override
+    public boolean checkWeightTodayRecode(Long memberId){
+        LocalDateTime start =  LocalDateTime.of(LocalDate.now(), LocalTime.of(0, 0, 0));
+        LocalDateTime end = LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59));
+        MemberEntity member = memberRepository.findById(memberId).orElseThrow(
+                () -> new ApplicationException(ErrorCode.USER_NOT_FOUND)
+        );
+        Boolean check = null;
+        WeightEntity weightEntity = weightRepository.findByMemberAndCreatedAtBetween(member,start,end).orElse(null);
+        if(weightEntity==null){
+            check = false;
+        }
+        else{
+            check = true;
+        }
+        return check;
+
     }
 }
 

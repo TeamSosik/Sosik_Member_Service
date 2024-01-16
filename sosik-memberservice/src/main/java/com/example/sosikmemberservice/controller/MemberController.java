@@ -3,6 +3,7 @@ package com.example.sosikmemberservice.controller;
 import com.example.sosikmemberservice.common.Result;
 import com.example.sosikmemberservice.dto.request.*;
 import com.example.sosikmemberservice.dto.response.GetMember;
+import com.example.sosikmemberservice.dto.response.GetWeight;
 import com.example.sosikmemberservice.dto.response.ResponseAuth;
 import com.example.sosikmemberservice.dto.response.ResponseGetManagementData;
 import com.example.sosikmemberservice.model.Mail;
@@ -44,7 +45,7 @@ public class MemberController {
         return Result.success();
     }
 
-    @PatchMapping("/v1/")
+    @PatchMapping("/v1")
     public Result<Void> updateMember(@RequestHeader Long memberId,
                                      @RequestPart @Valid final RequestUpdateMember updateMember,
                                      @RequestPart(required = false) MultipartFile profileImage) {
@@ -88,5 +89,12 @@ public class MemberController {
     public Result<ResponseGetManagementData> getManagementData(@RequestHeader Long memberId){
         ResponseGetManagementData responseGetManagementData = memberService.getManagementData(memberId);
         return Result.success(responseGetManagementData);
+    }
+
+    @GetMapping("/v1/checkRecode")
+    public boolean checkWeightRecode(@RequestHeader Long memberId){
+        memberService.checkWeightTodayRecode(memberId);
+        System.out.println(memberService.checkWeightTodayRecode(memberId));
+        return memberService.checkWeightTodayRecode(memberId);
     }
 }
