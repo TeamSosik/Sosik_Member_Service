@@ -136,7 +136,7 @@ public class MemberServiceImpl implements MemberService {
 
         return GetMember.create(member);
     }
-
+    @Transactional
     public RequestWeight createWeight(Long memberId, RequestWeight weightDTO) {
         MemberEntity member = memberRepository.findById(memberId).orElseThrow(() -> {
             return new ApplicationException(ErrorCode.USER_NOT_FOUND);
