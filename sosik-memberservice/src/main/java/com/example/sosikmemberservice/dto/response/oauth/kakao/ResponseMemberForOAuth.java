@@ -1,6 +1,5 @@
 package com.example.sosikmemberservice.dto.response.oauth.kakao;
 
-import com.example.sosikmemberservice.model.entity.WeightEntity;
 import lombok.Builder;
 
 @Builder

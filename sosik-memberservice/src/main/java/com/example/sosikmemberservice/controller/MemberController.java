@@ -3,7 +3,6 @@ package com.example.sosikmemberservice.controller;
 import com.example.sosikmemberservice.common.Result;
 import com.example.sosikmemberservice.dto.request.*;
 import com.example.sosikmemberservice.dto.response.GetMember;
-import com.example.sosikmemberservice.dto.response.GetWeight;
 import com.example.sosikmemberservice.dto.response.ResponseAuth;
 import com.example.sosikmemberservice.dto.response.ResponseGetManagementData;
 import com.example.sosikmemberservice.model.Mail;
