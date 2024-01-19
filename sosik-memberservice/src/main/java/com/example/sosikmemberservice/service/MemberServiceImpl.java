@@ -31,7 +31,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 
-@Transactional(readOnly = true)
+@Transactional
 @Service
 @RequiredArgsConstructor
 @CrossOrigin
@@ -47,6 +47,7 @@ public class MemberServiceImpl implements MemberService {
     public MemberEntity findMember(String email) {
         return memberRepository.findByEmail(new Email(email)).get();
     }
+
 
     public RequestSignup createMember(RequestSignup memberDTO, MultipartFile profileImage) {
         memberRepository.findByEmail(new Email(memberDTO.email())).ifPresent(member -> {
@@ -77,7 +78,6 @@ public class MemberServiceImpl implements MemberService {
         return memberDTO;
     }
 
-    @Transactional
     public void updateMember(Long memberId, RequestUpdateMember updateMember, MultipartFile profileImage) {
         MemberEntity member = memberRepository.findById(memberId).orElseThrow(
                 () -> new ApplicationException(ErrorCode.USER_NOT_FOUND)
@@ -90,7 +90,7 @@ public class MemberServiceImpl implements MemberService {
         member.updateMember(updateMember);
     }
 
-
+    @Transactional(readOnly = true)
     public ResponseAuth login(RequestLogin login) {
         MemberEntity entity = memberRepository.findByEmail(new Email(login.email())).orElseThrow(
                 () -> new ApplicationException(ErrorCode.USER_NOT_FOUND)
@@ -110,11 +110,13 @@ public class MemberServiceImpl implements MemberService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     public void logout(RequestLogout email) {
         refreshTokenRepository.logout(email);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean checkEmail(String email) {
         Email checkEmail = new Email(email);
         return memberRepository.existsByEmail(checkEmail);
@@ -136,7 +138,6 @@ public class MemberServiceImpl implements MemberService {
 
         return GetMember.create(member);
     }
-    @Transactional
     public RequestWeight createWeight(Long memberId, RequestWeight weightDTO) {
         MemberEntity member = memberRepository.findById(memberId).orElseThrow(() -> {
             return new ApplicationException(ErrorCode.USER_NOT_FOUND);
@@ -159,17 +160,17 @@ public class MemberServiceImpl implements MemberService {
         }
         return resultFileStore;
     }
+
     public ResponseGetManagementData getManagementData(Long memberId){
         MemberEntity memberEntity = memberRepository.findById(memberId).orElseThrow(
                 () -> new ApplicationException(ErrorCode.USER_NOT_FOUND)
         );
-        ResponseGetManagementData responseGetManagementData = ResponseGetManagementData.builder()
+        return ResponseGetManagementData.builder()
                 .tdeeCalculation(memberEntity.getTdeeCalculation())
                 .currentWeight(memberEntity.getWeight().get(memberEntity.getWeight().size() - 1).getCurrentWeight())
                 .targetWeight(memberEntity.getWeight().get(memberEntity.getWeight().size() - 1).getTargetWeight())
                 .managementWeek(memberEntity.getWeight().get(memberEntity.getWeight().size() - 1).getManagementWeek())
                 .build();
-        return responseGetManagementData;
     }
     @Override
     public boolean checkWeightTodayRecode(Long memberId){

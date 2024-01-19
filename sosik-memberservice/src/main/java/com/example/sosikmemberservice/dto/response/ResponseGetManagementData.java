@@ -1,7 +1,6 @@
 package com.example.sosikmemberservice.dto.response;
 
 import lombok.Builder;
-import lombok.Getter;
 
 import java.math.BigDecimal;
 
