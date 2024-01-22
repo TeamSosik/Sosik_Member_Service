@@ -79,6 +79,13 @@ public class MemberController {
         return new UrlResource("file:" + imageUrl);
     }
 
+    @GetMapping("/v1/{memberId}")
+    public String getNickname(@PathVariable Long memberId) {
+        GetMember result = memberService.getMember(memberId);
+        String nickname = result.getNickname();
+        return nickname;
+    }
+
     @PostMapping("/v1/checkEmail/{email}")
     public boolean checkEmail(@PathVariable("email") String email) {
         Boolean checkResult = memberService.checkEmail(email);
@@ -96,4 +103,5 @@ public class MemberController {
         System.out.println(memberService.checkWeightTodayRecode(memberId));
         return memberService.checkWeightTodayRecode(memberId);
     }
+
 }
