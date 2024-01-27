@@ -86,21 +86,20 @@ public class MemberController {
         return nickname;
     }
 
-    @PostMapping("/v1/checkEmail/{email}")
-    public boolean checkEmail(@PathVariable("email") String email) {
+    @GetMapping("/v1/validation/{email}")
+    public boolean validationEmail(@PathVariable("email") String email) {
         Boolean checkResult = memberService.checkEmail(email);
         return checkResult;
     }
-    @GetMapping("/v1/managementData")
-    public Result<ResponseGetManagementData> getManagementData(@RequestHeader Long memberId){
+    @GetMapping("/v1/target-weight-data")
+    public Result<ResponseGetManagementData> getTargetWeightData(@RequestHeader Long memberId){
         ResponseGetManagementData responseGetManagementData = memberService.getManagementData(memberId);
         return Result.success(responseGetManagementData);
     }
 
-    @GetMapping("/v1/checkRecode")
-    public boolean checkWeightRecode(@RequestHeader Long memberId){
+    @GetMapping("/v1/weight-record-check")
+    public boolean checkWeightRecord(@RequestHeader Long memberId){
         memberService.checkWeightTodayRecode(memberId);
-        System.out.println(memberService.checkWeightTodayRecode(memberId));
         return memberService.checkWeightTodayRecode(memberId);
     }
 
