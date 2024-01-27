@@ -2,6 +2,7 @@ package com.example.sosikmemberservice.model.entity;
 
 import com.example.sosikmemberservice.dto.request.RequestUpdateMember;
 import com.example.sosikmemberservice.dto.request.RequestUpdateOAuthMember;
+import com.example.sosikmemberservice.dto.request.RequestWeight;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -43,6 +44,19 @@ public class WeightEntity extends AuditingFields {
         this.currentWeight = currentWeight;
         this.targetWeight = targetWeight;
         this.managementWeek = managementWeek;
+    }
+
+    public static Integer calculateManagementWeek(BigDecimal currentWeight,BigDecimal targetWeight){
+        return currentWeight.subtract(targetWeight).abs().intValue()*2;
+    }
+
+    public static WeightEntity buildWeightEntity(MemberEntity member, RequestWeight weightDTO){
+           WeightEntity weight = WeightEntity.builder()
+                .member(member)
+                .currentWeight(weightDTO.currentWeight())
+                .targetWeight(weightDTO.targetWeight())
+                .build();
+           return weight;
     }
 
     public static WeightEntity create(BigDecimal currentWeight, BigDecimal targetWeight, Integer managementWeek) {

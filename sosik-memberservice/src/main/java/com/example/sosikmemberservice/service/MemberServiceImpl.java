@@ -48,34 +48,17 @@ public class MemberServiceImpl implements MemberService {
         return memberRepository.findByEmail(new Email(email)).get();
     }
 
-
-    public RequestSignup createMember(RequestSignup memberDTO, MultipartFile profileImage) {
+    public void createMember(RequestSignup memberDTO, MultipartFile profileImage) {
         memberRepository.findByEmail(new Email(memberDTO.email())).ifPresent(member -> {
             throw new ApplicationException(ErrorCode.DUPLICATED_USER_NAME);
         });
-
         ResultFileStore resultFileStore = getResultFileStore(profileImage);
-
-        MemberEntity member = MemberEntity.builder()
-                .name(memberDTO.name())
-                .password(encoder.encode(memberDTO.password()))
-                .gender(memberDTO.gender())
-                .email(memberDTO.email())
-                .height(memberDTO.height())
-                .activityLevel(memberDTO.activityLevel())
-                .nickname(memberDTO.nickname())
-                .profileImage(resultFileStore.folderPath() + "/" + resultFileStore.storeFileName())
-                .birthday(memberDTO.birthday())
-                .tdeeCalculation(memberDTO.tdeeCalculation())
-                .build();
-
-        // 무게 추가
-        Integer calculationWeek = memberDTO.currentWeight().subtract(memberDTO.targetWeight()).abs().intValue()*2;
-        WeightEntity weight = WeightEntity.create(memberDTO.currentWeight(), memberDTO.targetWeight(),calculationWeek);
+        MemberEntity member = MemberEntity.buildMember(memberDTO,encoder,resultFileStore);
+        WeightEntity weight = WeightEntity.create(memberDTO.currentWeight(),
+                memberDTO.targetWeight(),
+                WeightEntity.calculateManagementWeek(memberDTO.currentWeight(),memberDTO.targetWeight()));
         weight.addMember(member);
-
         memberRepository.save(member);
-        return memberDTO;
     }
 
     public void updateMember(Long memberId, RequestUpdateMember updateMember, MultipartFile profileImage) {
@@ -84,9 +67,9 @@ public class MemberServiceImpl implements MemberService {
         );
         ResultFileStore resultFileStore = getResultFileStore(profileImage);
         member.updateProfileUrl(resultFileStore);
-        WeightEntity weight = member.getWeight().get(member.getWeight().size() - 1);
-        Integer calculationWeek = updateMember.currentWeight().subtract(updateMember.targetWeight()).abs().intValue()*2;
-        weight.updateWeight(updateMember,calculationWeek);
+        WeightEntity weight = MemberEntity.getLastWeightEntity(member);
+        weight.updateWeight(updateMember,
+                WeightEntity.calculateManagementWeek(updateMember.currentWeight(),updateMember.targetWeight()));
         member.updateMember(updateMember);
     }
 
@@ -102,12 +85,8 @@ public class MemberServiceImpl implements MemberService {
         String refreshToken = jwtTokenUtils.createRefreshToken(login.email(), "USER", entity.getMemberId());
         saveToken(refreshToken, login.email());
         Member member = Member.fromEntity(entity);
-
-        return ResponseAuth.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .member(member)
-                .build();
+        ResponseAuth responseAuth = ResponseAuth.buildResponseAuth(accessToken,refreshToken,member);
+        return responseAuth;
     }
 
     @Transactional(readOnly = true)
@@ -117,7 +96,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional(readOnly = true)
-    public boolean checkEmail(String email) {
+    public boolean validation(String email) {
         Email checkEmail = new Email(email);
         return memberRepository.existsByEmail(checkEmail);
     }
@@ -138,17 +117,12 @@ public class MemberServiceImpl implements MemberService {
 
         return GetMember.create(member);
     }
-    public RequestWeight createWeight(Long memberId, RequestWeight weightDTO) {
+    public void createWeight(Long memberId, RequestWeight weightDTO) {
         MemberEntity member = memberRepository.findById(memberId).orElseThrow(() -> {
             return new ApplicationException(ErrorCode.USER_NOT_FOUND);
         });
-        WeightEntity weight = WeightEntity.builder()
-                .member(member)
-                .currentWeight(weightDTO.currentWeight())
-                .targetWeight(weightDTO.targetWeight())
-                .build();
+        WeightEntity weight = WeightEntity.buildWeightEntity(member,weightDTO);
         weightRepository.save(weight);
-        return weightDTO;
     }
 
     private ResultFileStore getResultFileStore(MultipartFile profileImage) {
@@ -165,22 +139,19 @@ public class MemberServiceImpl implements MemberService {
         MemberEntity memberEntity = memberRepository.findById(memberId).orElseThrow(
                 () -> new ApplicationException(ErrorCode.USER_NOT_FOUND)
         );
-        return ResponseGetManagementData.builder()
-                .tdeeCalculation(memberEntity.getTdeeCalculation())
-                .currentWeight(memberEntity.getWeight().get(memberEntity.getWeight().size() - 1).getCurrentWeight())
-                .targetWeight(memberEntity.getWeight().get(memberEntity.getWeight().size() - 1).getTargetWeight())
-                .managementWeek(memberEntity.getWeight().get(memberEntity.getWeight().size() - 1).getManagementWeek())
-                .build();
+        ResponseGetManagementData responseGetManagementData = ResponseGetManagementData
+                .buildResponseGetManagementData(memberEntity);
+        return responseGetManagementData;
     }
     @Override
-    public boolean checkWeightTodayRecode(Long memberId){
-        LocalDateTime start =  LocalDateTime.of(LocalDate.now(), LocalTime.of(0, 0, 0));
-        LocalDateTime end = LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59));
+    public boolean checkWeightTodayRecord(Long memberId,LocalDateTime start, LocalDateTime end){
         MemberEntity member = memberRepository.findById(memberId).orElseThrow(
                 () -> new ApplicationException(ErrorCode.USER_NOT_FOUND)
         );
         Boolean check = null;
-        WeightEntity weightEntity = weightRepository.findByMemberAndCreatedAtBetween(member,start,end).orElse(null);
+        WeightEntity weightEntity = weightRepository
+                .findByMemberAndCreatedAtBetween(member,start,end)
+                .orElse(null);
         if(weightEntity==null){
             check = false;
         }
@@ -188,7 +159,6 @@ public class MemberServiceImpl implements MemberService {
             check = true;
         }
         return check;
-
     }
 }
 

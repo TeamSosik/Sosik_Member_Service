@@ -1,6 +1,7 @@
 package com.example.sosikmemberservice.model.entity;
 
 
+import com.example.sosikmemberservice.dto.request.RequestSignup;
 import com.example.sosikmemberservice.dto.request.RequestUpdateMember;
 import com.example.sosikmemberservice.dto.request.RequestUpdateOAuthMember;
 import com.example.sosikmemberservice.model.MemberRole;
@@ -11,6 +12,7 @@ import com.example.sosikmemberservice.util.file.ResultFileStore;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -85,6 +87,27 @@ public class MemberEntity extends AuditingFields {
         this.birthday = birthday;
         this.tdeeCalculation = tdeeCalculation;
 
+    }
+
+    public static WeightEntity getLastWeightEntity(MemberEntity member){
+       return member.getWeight().get(member.getWeight().size() - 1);
+    }
+
+    public static MemberEntity buildMember(RequestSignup memberDTO,BCryptPasswordEncoder encoder, ResultFileStore resultFileStore){
+        MemberEntity member = MemberEntity.builder()
+                .name(memberDTO.name())
+                .password(encoder.encode(memberDTO.password()))
+                .gender(memberDTO.gender())
+                .email(memberDTO.email())
+                .height(memberDTO.height())
+                .activityLevel(memberDTO.activityLevel())
+                .nickname(memberDTO.nickname())
+                .profileImage(resultFileStore.folderPath() + "/" + resultFileStore.storeFileName())
+                .birthday(memberDTO.birthday())
+                .tdeeCalculation(memberDTO.tdeeCalculation())
+                .build();
+
+        return member;
     }
 
     public void updateMember(RequestUpdateMember updateMember) {
