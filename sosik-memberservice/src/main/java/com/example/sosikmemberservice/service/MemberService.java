@@ -7,19 +7,21 @@ import com.example.sosikmemberservice.dto.response.ResponseGetManagementData;
 import com.example.sosikmemberservice.model.entity.MemberEntity;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
+
 public interface MemberService {
 
     MemberEntity findMember(String email);
-    RequestSignup createMember(RequestSignup memberDTO, MultipartFile profileImage);
+    void createMember(RequestSignup memberDTO, MultipartFile profileImage);
     void updateMember(Long memberId,RequestUpdateMember updateMember,MultipartFile profileImage);
     ResponseAuth login(RequestLogin login);
     void logout(RequestLogout email);
     void saveToken(String refreshToken,String email);
     boolean existsRefreshToken(String refreshToken);
     GetMember getMember(Long memberId);
-    RequestWeight createWeight(Long memberId, RequestWeight weightDTO);
-    boolean checkEmail(String email);
+    void createWeight(Long memberId, RequestWeight weightDTO);
+    boolean validation(String email);
     ResponseGetManagementData getManagementData(Long memberId);
-    boolean checkWeightTodayRecode(Long memberId);
+    boolean checkWeightTodayRecord(Long memberId, LocalDateTime start, LocalDateTime end);
 
 }

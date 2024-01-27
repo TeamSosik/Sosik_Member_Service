@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.MalformedURLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @RestController
 @RequiredArgsConstructor
@@ -88,7 +91,7 @@ public class MemberController {
 
     @GetMapping("/v1/validation/{email}")
     public boolean validationEmail(@PathVariable("email") String email) {
-        Boolean checkResult = memberService.checkEmail(email);
+        Boolean checkResult = memberService.validation(email);
         return checkResult;
     }
     @GetMapping("/v1/target-weight-data")
@@ -99,8 +102,9 @@ public class MemberController {
 
     @GetMapping("/v1/weight-record-check")
     public boolean checkWeightRecord(@RequestHeader Long memberId){
-        memberService.checkWeightTodayRecode(memberId);
-        return memberService.checkWeightTodayRecode(memberId);
+        LocalDateTime start =  LocalDateTime.of(LocalDate.now(), LocalTime.of(0, 0, 0));
+        LocalDateTime end = LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59));
+        return memberService.checkWeightTodayRecord(memberId,start,end);
     }
 
 }
