@@ -30,17 +30,9 @@ public class RefreshTokenRepositoryImpl implements RefreshTokenRepository{
         stringValueOperations
                 .set(memberIdentifier,token,timeToLiveSeconds);
     }
-
-    // TO-DO : 토큰 값이 이상하게 나온다.
     @Override
-    public Optional<String> findTokenByMemberIdentifier(String memberIdentifier) {
-        final String email = redisTemplate.opsForValue().get(memberIdentifier);
-        return Optional.of(email);
-    }
-
-    @Override
-    public void logout(final RequestLogout memberIdentifier) {
-        redisTemplate.delete(memberIdentifier.email());
+    public void deleteToken(final String email) {
+        redisTemplate.delete(email);
     }
 
     @Override

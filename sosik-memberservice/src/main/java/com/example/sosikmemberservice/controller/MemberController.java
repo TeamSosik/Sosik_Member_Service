@@ -39,8 +39,8 @@ public class MemberController {
     }
 
     @PostMapping("/v1/sign-out")
-    public Result<Void> logout(@RequestBody final RequestLogout requestLogout) {
-        memberService.logout(requestLogout);
+    public Result<Void> logout(@RequestBody final String email) {
+        memberService.deleteToken(email);
         return Result.success();
     }
 
