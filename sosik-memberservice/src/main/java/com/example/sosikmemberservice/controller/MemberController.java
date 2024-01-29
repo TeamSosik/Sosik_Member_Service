@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.MalformedURLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @RestController
 @RequiredArgsConstructor
@@ -86,22 +89,22 @@ public class MemberController {
         return nickname;
     }
 
-    @PostMapping("/v1/checkEmail/{email}")
-    public boolean checkEmail(@PathVariable("email") String email) {
-        Boolean checkResult = memberService.checkEmail(email);
+    @GetMapping("/v1/validation/{email}")
+    public boolean validationEmail(@PathVariable("email") String email) {
+        Boolean checkResult = memberService.validation(email);
         return checkResult;
     }
-    @GetMapping("/v1/managementData")
-    public Result<ResponseGetManagementData> getManagementData(@RequestHeader Long memberId){
+    @GetMapping("/v1/target-weight-data")
+    public Result<ResponseGetManagementData> getTargetWeightData(@RequestHeader Long memberId){
         ResponseGetManagementData responseGetManagementData = memberService.getManagementData(memberId);
         return Result.success(responseGetManagementData);
     }
 
-    @GetMapping("/v1/checkRecode")
-    public boolean checkWeightRecode(@RequestHeader Long memberId){
-        memberService.checkWeightTodayRecode(memberId);
-        System.out.println(memberService.checkWeightTodayRecode(memberId));
-        return memberService.checkWeightTodayRecode(memberId);
+    @GetMapping("/v1/weight-record-check")
+    public boolean checkWeightRecord(@RequestHeader Long memberId){
+        LocalDateTime start =  LocalDateTime.of(LocalDate.now(), LocalTime.of(0, 0, 0));
+        LocalDateTime end = LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59));
+        return memberService.checkWeightTodayRecord(memberId,start,end);
     }
 
 }
