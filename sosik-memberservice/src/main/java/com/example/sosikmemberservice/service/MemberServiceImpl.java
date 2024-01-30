@@ -90,8 +90,8 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Transactional(readOnly = true)
-    public void logout(RequestLogout email) {
-        refreshTokenRepository.logout(email);
+    public void deleteToken(String email) {
+        refreshTokenRepository.deleteToken(email);
     }
 
     @Override

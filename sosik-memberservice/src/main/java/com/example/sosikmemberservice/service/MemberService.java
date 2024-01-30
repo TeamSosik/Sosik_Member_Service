@@ -15,7 +15,7 @@ public interface MemberService {
     void createMember(RequestSignup memberDTO, MultipartFile profileImage);
     void updateMember(Long memberId,RequestUpdateMember updateMember,MultipartFile profileImage);
     ResponseAuth login(RequestLogin login);
-    void logout(RequestLogout email);
+    void deleteToken(String email);
     void saveToken(String refreshToken,String email);
     boolean existsRefreshToken(String refreshToken);
     GetMember getMember(Long memberId);
