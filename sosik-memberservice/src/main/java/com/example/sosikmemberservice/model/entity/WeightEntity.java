@@ -50,11 +50,12 @@ public class WeightEntity extends AuditingFields {
         return currentWeight.subtract(targetWeight).abs().intValue()*2;
     }
 
-    public static WeightEntity buildWeightEntity(MemberEntity member, RequestWeight weightDTO){
+    public static WeightEntity buildWeightEntity(MemberEntity member, RequestWeight weightDTO,Integer calculationWeek){
            WeightEntity weight = WeightEntity.builder()
                 .member(member)
                 .currentWeight(weightDTO.currentWeight())
                 .targetWeight(weightDTO.targetWeight())
+                .managementWeek(calculationWeek)
                 .build();
            return weight;
     }

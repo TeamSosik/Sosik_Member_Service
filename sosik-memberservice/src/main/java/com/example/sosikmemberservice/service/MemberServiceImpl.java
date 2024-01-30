@@ -90,8 +90,8 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Transactional(readOnly = true)
-    public void logout(RequestLogout email) {
-        refreshTokenRepository.logout(email);
+    public void deleteToken(String email) {
+        refreshTokenRepository.deleteToken(email);
     }
 
     @Override
@@ -121,7 +121,9 @@ public class MemberServiceImpl implements MemberService {
         MemberEntity member = memberRepository.findById(memberId).orElseThrow(() -> {
             return new ApplicationException(ErrorCode.USER_NOT_FOUND);
         });
-        WeightEntity weight = WeightEntity.buildWeightEntity(member,weightDTO);
+
+        WeightEntity weight = WeightEntity.buildWeightEntity(member,weightDTO,
+                WeightEntity.calculateManagementWeek(weightDTO.currentWeight(),weightDTO.targetWeight()));
         weightRepository.save(weight);
     }
 
