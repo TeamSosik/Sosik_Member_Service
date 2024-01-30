@@ -83,10 +83,9 @@ public class MemberController {
     }
 
     @GetMapping("/v1/{memberId}")
-    public String getNickname(@PathVariable Long memberId) {
+    public GetMember getNickname(@PathVariable Long memberId) {
         GetMember result = memberService.getMember(memberId);
-        String nickname = result.getNickname();
-        return nickname;
+        return result;
     }
 
     @GetMapping("/v1/validation/{email}")
