@@ -23,31 +23,31 @@ import java.time.LocalTime;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/members")
+@RequestMapping("/members/v1")
 @Slf4j
 public class MemberController {
     private final MemberService memberService;
     private final MailService mailService;
 
-    @PostMapping("/v1/sign-up")
+    @PostMapping("/sign-up")
     public Result<Void> createMember(@RequestPart @Valid RequestSignup member,
                                      @RequestPart(required = false) MultipartFile profileImage) {
         memberService.createMember(member, profileImage);
         return Result.success();
     }
 
-    @PostMapping("/v1/sign-in")
+    @PostMapping("/sign-in")
     public Result<ResponseAuth> login(@RequestBody @Valid final RequestLogin requestLogin) {
         return Result.success(memberService.login(requestLogin));
     }
 
-    @PostMapping("/v1/sign-out")
+    @PostMapping("/sign-out")
     public Result<Void> logout(@RequestBody final String email) {
         memberService.deleteToken(email);
         return Result.success();
     }
 
-    @PatchMapping("/v1")
+    @PatchMapping
     public Result<Void> updateMember(@RequestHeader Long memberId,
                                      @RequestPart @Valid final RequestUpdateMember updateMember,
                                      @RequestPart(required = false) MultipartFile profileImage) {
@@ -55,51 +55,51 @@ public class MemberController {
         return Result.success();
     }
 
-    @PostMapping("/v1/passwd")
+    @PostMapping("/passwd")
     public Result<Void> sendEmail(@RequestBody final RequestFindPw requestFindPw) {
         Mail dto = mailService.createMailAndChangePassword(requestFindPw.email());
         mailService.mailSend(dto);
         return Result.success();
     }
 
-    @GetMapping("/v1/detail")
+    @GetMapping("/detail")
     public Result<GetMember> getMember(@RequestHeader Long memberId) {
         GetMember result = memberService.getMember(memberId);
         return Result.success(result);
     }
 
-    @PostMapping("/v1/weight")
+    @PostMapping("/weight")
     public Result<Void> createWeight(@RequestHeader Long memberId, @RequestBody RequestWeight requestWeight) {
         memberService.createWeight(memberId, requestWeight);
         return Result.success();
     }
 
     //프로필사진 불러오기
-    @GetMapping("/v1/images/{memberId}")
+    @GetMapping("/images/{memberId}")
     public Resource showImage(@PathVariable Long memberId) throws MalformedURLException {
         GetMember result = memberService.getMember(memberId);
         String imageUrl = result.getProfileImage();
         return new UrlResource("file:" + imageUrl);
     }
 
-    @GetMapping("/v1/{memberId}")
+    @GetMapping("/{memberId}")
     public GetMember getNickname(@PathVariable Long memberId) {
         GetMember result = memberService.getMember(memberId);
         return result;
     }
 
-    @GetMapping("/v1/validation/{email}")
+    @GetMapping("/validation/{email}")
     public boolean validationEmail(@PathVariable("email") String email) {
         Boolean checkResult = memberService.validation(email);
         return checkResult;
     }
-    @GetMapping("/v1/target-weight-data")
+    @GetMapping("/target-weight-data")
     public Result<ResponseGetManagementData> getTargetWeightData(@RequestHeader Long memberId){
         ResponseGetManagementData responseGetManagementData = memberService.getManagementData(memberId);
         return Result.success(responseGetManagementData);
     }
 
-    @GetMapping("/v1/weight-record-check")
+    @GetMapping("/weight-record-check")
     public boolean checkWeightRecord(@RequestHeader Long memberId){
         LocalDateTime start =  LocalDateTime.of(LocalDate.now(), LocalTime.of(0, 0, 0));
         LocalDateTime end = LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59));
