@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Objects;
 
 
 @Transactional
@@ -65,8 +66,10 @@ public class MemberServiceImpl implements MemberService {
         MemberEntity member = memberRepository.findById(memberId).orElseThrow(
                 () -> new ApplicationException(ErrorCode.USER_NOT_FOUND)
         );
-        ResultFileStore resultFileStore = getResultFileStore(profileImage);
-        member.updateProfileUrl(resultFileStore);
+        if(Objects.nonNull(profileImage) &&  !profileImage.isEmpty()){
+            ResultFileStore resultFileStore = getResultFileStore(profileImage);
+            member.updateProfileUrl(resultFileStore);
+        }
         WeightEntity weight = MemberEntity.getLastWeightEntity(member);
         weight.updateWeight(updateMember,
                 WeightEntity.calculateManagementWeek(updateMember.currentWeight(),updateMember.targetWeight()));
