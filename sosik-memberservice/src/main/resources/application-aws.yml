@@ -2,7 +2,7 @@ server:
   port: 9000
 
 file:
-  location: /Users/gimmin-u/Desktop/final_project/file # S3로 연결 예정
+  location: /home/ubuntu/build/file
 
 
 spring:
