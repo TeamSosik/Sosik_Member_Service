@@ -27,7 +27,9 @@
 
 ## **프로젝트 구조**
 
-<img width="920" alt="structure" src="https://github.com/Kimminwoo02/catalogs/assets/71600656/a192da90-4f37-43d8-8861-403384ecda31">
+<div align="center">
+  <img width="920" height="450" alt="structure" src="https://github.com/TeamSosik/.github/assets/98299877/0359867d-9757-4ba3-98ae-579ae8f5d7a5">
+</div>
 
 ## **기술 스택 🛠️**
 
