@@ -24,6 +24,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -68,7 +69,7 @@ public class OAuthServiceImpl implements OAuthService {
                 .email(userInfo.kakaoAccount().email())
                 .nickname(userInfo.kakaoAccount().profile().nickname())
                 .birthday("2000-01-01")
-                .profileImage(uploadPath)
+                .profileImage(uploadPath+ File.separator+"cat.jpg")
                 .build();
 
         String refreshToken = jwtTokenUtils.createRefreshToken(userInfo.kakaoAccount().email(),

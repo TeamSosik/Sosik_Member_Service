@@ -17,6 +17,7 @@ public enum ErrorCode {
     EXPIRED_TOKEN_ERROR(HttpStatus.UNAUTHORIZED, "This token is expired."),
     UNSUPPORTED_TOKEN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "This token is not supported."),
     MALFORMED_TOKEN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Invalid token."),
+    JSON_PARSING_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "JSON Parsing Error."),
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "This is an error from the internal server.");
 
